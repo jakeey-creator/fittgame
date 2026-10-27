@@ -4,11 +4,15 @@ Body-Tracking-Fitnessspiele im Browser: Die Kamera erkennt deinen Körper (Media
 
 | Spiel | Dauer | Bewegung |
 |---|---|---|
-| 🥊 Box Rush | 1:00 | Neon-Ziele mit den Händen treffen |
+| ✋ Power Punch | 1:15 | Runden: Hände (richtige Hand), Sandsack-Combos 1-2-3, Beide Hände |
+| 🦶 Kick Attack | 1:00 | Runden: seitliche Kicks links/rechts, Knie hoch |
 | 🧱 Wall Dodge | 1:15 | Ducken, springen, links/rechts ausweichen |
-| ⭐ Star Jumps | 1:00 | Hampelmänner zählen |
-| 🏃 Knee Sprint | 1:00 | High Knees auf der Stelle |
+| ⭐ Star Jumps | 1:00 | Hampelmänner, Hände zu den Zielen oben/unten |
 | 🕺 Pose Match | 1:30 | Posen nachmachen und halten |
+
+Look angelehnt an das Referenzvideo: natürliches Kamerabild, dezente Gelenk-Kreise, farbige Hand-/Fuß-Marker
+(blau/rot = linke/rechte Hand, türkis/pink = linker/rechter Fuß), Ziele mit Blitz und gestrichelter Führungslinie,
+Rundentitel („Sack 2 von 3“), Comic-Treffer („POW!“, „KICK!“, „PERFECT!“), ⚡ Energie + ×Combo und ein dunkler Ergebnis-Screen.
 
 Alle Sounds und die Musik werden live mit der Web Audio API erzeugt, es gibt keine Audiodateien.
 
