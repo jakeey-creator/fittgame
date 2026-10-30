@@ -121,6 +121,8 @@
     <symbol id="i-wall" viewBox="0 0 24 24"><g fill="currentColor"><rect x="2" y="4" width="9" height="4.4" rx="1"/><rect x="13" y="4" width="9" height="4.4" rx="1"/><rect x="2" y="10" width="4" height="4.4" rx="1"/><rect x="8" y="10" width="9" height="4.4" rx="1"/><rect x="19" y="10" width="3" height="4.4" rx="1"/><rect x="2" y="16" width="9" height="4.4" rx="1"/><rect x="13" y="16" width="9" height="4.4" rx="1"/></g></symbol>
     <symbol id="i-pose" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2.2" fill="currentColor"/><path d="M3 4l5 5h8l5-5M12 9v6M12 15l-4 7M12 15l4 7"/></g></symbol>
     <symbol id="i-both" viewBox="0 0 48 24"><use href="#i-hand" x="0" y="0" width="24" height="24"/><g transform="translate(48 0) scale(-1 1)"><use href="#i-hand" x="0" y="0" width="24" height="24"/></g></symbol>
+    <symbol id="i-swipe" viewBox="0 0 24 24"><use href="#i-hand" x="5" y="1" width="19" height="19"/><path d="M1.5 8h4M1 12.5h5M2 17h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-bomb" viewBox="0 0 24 24"><circle cx="11" cy="14" r="7.5" fill="currentColor"/><path d="M15.5 8.5 18 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="19.5" cy="3.6" r="2" fill="#ffd500"/></symbol>
     <symbol id="i-left" viewBox="0 0 24 24"><path d="M14 4 6 12l8 8M6 12h14" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-right" viewBox="0 0 24 24"><path d="M10 4l8 8-8 8M18 12H4" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M4 10l8 8 8-8M12 18V3" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -175,8 +177,11 @@
 //  FITTGAME: Body-Tracking-Fitnessspiele (MediaPipe Pose + WebAudio)
 // ================================================================
 const MP_VER = '0.10.14';
-const MP_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VER}`;
-const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+// In der iOS-App (Capacitor) liegt alles lokal im Bundle, im Browser kommt es vom CDN.
+const NATIVE = !!window.Capacitor?.isNativePlatform?.();
+const MP_URL = NATIVE ? new URL('vendor/mediapipe', location.href).href : `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VER}`;
+const MODEL_URL = NATIVE ? new URL('vendor/pose_landmarker_lite.task', location.href).href
+  : 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 
 const $ = s => document.querySelector(s);
 const video = $('#video'), canvas = $('#stage'), ctx = canvas.getContext('2d');
@@ -263,6 +268,8 @@ const Audio = {
   pass(){ this.tone(880, 0.1, { type: 'sine', vol: 0.25 }); this.tone(1320, 0.18, { type: 'sine', vol: 0.25, t: 0.07 }); },
   rep(n){ const scale = [0, 2, 4, 7, 9, 12, 14, 16]; const f = 440 * Math.pow(2, scale[n % scale.length] / 12);
     this.tone(f, 0.18, { type: 'triangle', vol: 0.3 }); this.tone(f * 2, 0.08, { type: 'square', vol: 0.06 }); },
+  swipe(){ this.noiseHit(0.22, { vol: 0.4, freq: 900, q: 1.4, sweep: 5 }); this.tone(420, 0.14, { type: 'triangle', vol: 0.2, slide: 2.2 }); },
+  boom(){ this.crash(); this.noiseHit(0.8, { vol: 0.5, freq: 200, q: 0.5, type: 'lowpass', sweep: 0.3, t: 0.05 }); this.tone(60, 0.6, { type: 'sine', vol: 0.7, slide: 0.5 }); },
   tick(){ this.tone(1200, 0.04, { type: 'square', vol: 0.07 }); },
   hold(p){ this.tone(400 + p * 600, 0.05, { type: 'sine', vol: 0.12 }); },
   combo(){ [0, 5, 9, 12].forEach((n, i) => this.tone(523 * Math.pow(2, n / 12), 0.18, { type: 'square', vol: 0.1, t: i * 0.07 })); },
@@ -647,7 +654,7 @@ function touches(limb, t, extra = 0.12){
 function fit(x, y, r){ return { x: clamp(x, r + 8, W - r - 8), y: clamp(y, Math.max(r + 110, H * 0.3 + r * 0.6), H - r - 30) }; }
 
 // ================================================================
-//  DIE 5 SPIELE
+//  DIE 6 SPIELE
 // ================================================================
 const GAMES = [];
 
@@ -804,7 +811,152 @@ GAMES.push({
   stats(){ return [['Treffer', S.hits], ['Verpasst', S.misses], ['Max Combo', '×' + S.maxCombo]]; }
 });
 
-// ---------- 3) WALL DODGE: Wänden ausweichen ----------
+// ---------- 3) SMASH PARTY: Dinge wegwischen & wegkicken, Bomben nicht berühren ----------
+const SMASH_TYPES = {
+  bug:   { emoji: '👾', act: 'swipe', zone: 'up',   pts: 1, col: '#8b5cff' },
+  melon: { emoji: '🍉', act: 'swipe', zone: 'up',   pts: 1, col: '#ff2e4d' },
+  slime: { emoji: '🦠', act: 'swipe', zone: 'up',   pts: 1, col: '#1de9b6' },
+  star:  { emoji: '⭐', act: 'swipe', zone: 'up',   pts: 3, col: '#ffd500', fast: true },
+  ball:  { emoji: '⚽', act: 'kick',  zone: 'down', pts: 1, col: '#ffffff' },
+  can:   { emoji: '🥫', act: 'kick',  zone: 'down', pts: 1, col: '#ff8a1e' },
+  bomb:  { emoji: '💣', act: 'avoid', zone: 'any',  pts: 0, col: '#ff2e4d' }
+};
+const SMASH_WAVES = [
+  { title: 'Welle 1: Wischen',  badge: ['hand', 'WISCHEN', C.blue],  pool: ['bug', 'melon', 'slime', 'bug', 'star'] },
+  { title: 'Welle 2: Kicken',   badge: ['foot', 'KICKEN', C.teal],   pool: ['ball', 'can', 'ball'] },
+  { title: 'Welle 3: Vorsicht', badge: ['bomb', 'BOMBEN!', C.red],   pool: ['bug', 'melon', 'ball', 'can', 'bomb', 'slime'] },
+  { title: 'Welle 4: Mix',      badge: ['swipe', 'MIX', C.yellow],   pool: ['bug', 'melon', 'slime', 'ball', 'can', 'star', 'bomb', 'bomb'] },
+  { title: 'Finale!',           badge: ['star', 'FINALE', C.yellow], pool: ['bug', 'melon', 'slime', 'ball', 'can', 'ball', 'star', 'bomb', 'bomb'] }
+];
+GAMES.push({
+  id: 'smash', name: 'Smash Party', icon: 'swipe', col: '#ff8a1e', dur: 75, met: 7, bpm: 136,
+  desc: 'Monster wegwischen, Bälle wegkicken, aber Finger weg von den Bomben!',
+  stars: [20, 38, 55], needs: 'legs', limbs: ['lh', 'rh', 'lf', 'rf'],
+  init(){ this.objs = []; this.spawnT = 1.4; this.el = 0; this.wave = -1; this.hist = {}; this.vel = {}; this.nextWave(); },
+  nextWave(){
+    this.wave++;
+    const w = SMASH_WAVES[this.wave];
+    setTitle(w.title); badge(...w.badge);
+  },
+  // Geschwindigkeit jeder Gliedmaße über die letzten 0,15 s (für Wisch-/Kick-Erkennung)
+  track(){
+    const now = performance.now() / 1000;
+    for (const l of this.limbs){
+      const h = this.hist[l] ||= [];
+      const p = limbPos(l);
+      if (p) h.push({ x: p.x, y: p.y, t: now });
+      while (h.length && now - h[0].t > 0.15) h.shift();
+      this.vel[l] = h.length >= 2 ? { x: (h[h.length - 1].x - h[0].x) / Math.max(0.03, h[h.length - 1].t - h[0].t),
+                                       y: (h[h.length - 1].y - h[0].y) / Math.max(0.03, h[h.length - 1].t - h[0].t) } : { x: 0, y: 0 };
+    }
+  },
+  spawn(){
+    const type = pick(SMASH_WAVES[this.wave].pool), d = SMASH_TYPES[type];
+    const T = body?.T || H * 0.2, sh = body?.sh || { x: W / 2, y: H * 0.42 }, hp = body?.hp || { x: W / 2, y: H * 0.55 };
+    const side = Math.random() < 0.5 ? -1 : 1, r = clamp(T * 0.26, 28, 56);
+    const zone = d.zone === 'any' ? (Math.random() < 0.6 ? 'up' : 'down') : d.zone;
+    let tx, ty, sx, sy;
+    if (zone === 'up'){
+      tx = sh.x + side * rand(0.5, 1.05) * T; ty = sh.y + rand(-0.4, 0.5) * T;
+      sx = side < 0 ? -r : W + r; sy = ty - rand(0.2, 0.8) * T;
+      if (Math.random() < 0.3){ sx = tx; sy = -r; }          // manchmal von oben
+    } else {
+      const ankY = base?.ankleY ?? hp.y + T * 1.8;
+      tx = hp.x + side * rand(0.7, 1.0) * T; ty = clamp(ankY - rand(0.15, 0.5) * T, hp.y + 0.4 * T, H - r - 20);
+      sx = side < 0 ? -r : W + r; sy = ty;                      // rollt vom Rand herein
+    }
+    const p = fit(tx, ty, r);
+    this.objs.push({ type, d, zone, x: sx, y: sy, sx, sy, tx: p.x, ty: p.y, r, t: 0, rot: 0, spin: rand(-2, 2), vx: 0, vy: 0,
+      arrive: d.fast ? 0.6 : rand(0.9, 1.3), stay: d.fast ? 1.6 : d.act === 'avoid' ? 2.4 : 3.4, state: 'in' });
+    if (d.act === 'avoid') Audio.tick(); else Audio.whoosh();
+  },
+  smash(o, l, v){
+    o.state = 'fly';
+    const dir = v.x === 0 ? (o.x < W / 2 ? -1 : 1) : Math.sign(v.x);
+    o.vx = v.x * 0.9 + dir * 250; o.vy = Math.min(v.y * 0.9, 0) - 650; o.spin = rand(4, 8) * dir;
+    good(o.x, o.y, o.d.pts);
+    burst(o.x, o.y, o.d.col, 16, 450);
+    if (o.d.act === 'kick'){ kickFx(o.x, o.y); Audio.kick(); }
+    else { hitFx(o.x, o.y, o.d.pts > 1 ? 'MEGA!' : pick(['WUSCH!', 'SWIPE!', 'WEG!', 'ZACK!'])); Audio.swipe(); if (o.d.pts > 1) Audio.bonus(); }
+  },
+  explode(o){
+    o.state = 'gone';
+    bad(); S.score = Math.max(0, S.score - 2);
+    shake = 0.5; flash = 1; flashColor = '255,120,0'; Audio.boom();
+    burst(o.x, o.y, '#ff8a1e', 30, 700); burst(o.x, o.y, '#ffd500', 20, 500);
+    rings.push({ x: o.x, y: o.y, life: 0.6, max: 0.6, r0: 30, r1: 220, sparks: true });
+    words.push({ text: 'BOOM!', x: o.x, y: o.y - 30, life: 1, max: 1, rot: -0.1, size: 60, color: '#ff8a1e' });
+  },
+  update(dt){
+    this.el += dt;
+    if (this.wave < SMASH_WAVES.length - 1 && this.el >= (this.wave + 1) * 15) this.nextWave();
+    this.track();
+    this.spawnT -= dt;
+    const active = this.objs.filter(o => o.state === 'in').length;
+    if (this.spawnT <= 0 && active < (this.wave >= 4 ? 4 : 3)){ this.spawn(); this.spawnT = clamp(1.5 - this.el * 0.012, 0.6, 1.5); }
+    for (const o of this.objs){
+      o.t += dt;
+      if (o.state === 'fly'){ o.x += o.vx * dt; o.y += o.vy * dt; o.vy += 1400 * dt; o.rot += o.spin * dt; continue; }
+      if (o.state !== 'in') continue;
+      if (o.t < o.arrive){
+        const k = 1 - Math.pow(1 - o.t / o.arrive, 3);
+        o.x = o.sx + (o.tx - o.sx) * k;
+        o.y = o.sy + (o.ty - o.sy) * k;
+      } else { o.x = o.tx + Math.sin(o.t * 3) * 6; o.y = o.ty + Math.cos(o.t * 2.4) * 6; }
+      o.rot = o.zone === 'down' ? (o.x - o.sx) / o.r : Math.sin(o.t * 2) * 0.25;
+      if (body && o.t > o.arrive * 0.4){
+        const limbs = o.d.act === 'kick' ? ['lf', 'rf'] : o.d.act === 'swipe' ? ['lh', 'rh'] : this.limbs;
+        for (const l of limbs){
+          if (!touches(l, o, 0.1)) continue;
+          if (o.d.act === 'avoid'){ this.explode(o); break; }
+          const v = this.vel[l], need = (o.d.act === 'kick' ? 1.0 : 1.6) * body.T;
+          if (Math.hypot(v.x, v.y) > need){ this.smash(o, l, v); break; }
+          if (!o.hinted){ o.hinted = true; words.push({ text: o.d.act === 'kick' ? 'FESTER!' : 'WISCHEN!', x: o.x, y: o.y - o.r - 20, life: 0.7, max: 0.7, rot: 0, size: 26, color: '#fff' }); }
+        }
+      }
+      if (o.state === 'in' && o.t > o.arrive + o.stay){
+        o.state = 'gone';
+        if (o.d.act === 'avoid'){ words.push({ text: 'SAFE', x: o.x, y: o.y, life: 0.7, max: 0.7, rot: 0, size: 26, color: C.teal }); burst(o.x, o.y, '#888', 10, 200); }
+        else { bad(); words.push({ text: 'ZU SPÄT', x: o.x, y: o.y - 20, life: 0.8, max: 0.8, rot: 0.05, size: 30, color: C.red }); burst(o.x, o.y, o.d.col, 10, 200); }
+      }
+    }
+    this.objs = this.objs.filter(o => o.state === 'in' || (o.state === 'fly' && o.y < H + 200 && o.x > -200 && o.x < W + 200));
+    Music.intensity = S.combo >= 5 ? 1 : 0;
+  },
+  draw(){
+    for (const o of this.objs){
+      if (o.state === 'in'){
+        const avoid = o.d.act === 'avoid', col = avoid ? C.red : o.d.act === 'kick' ? C.teal : C.blue;
+        const left = clamp(1 - (o.t - o.arrive) / o.stay, 0, 1);
+        if (avoid){
+          const pulse = 1 + Math.sin(o.t * 12) * 0.08;
+          ctx.save(); ctx.setLineDash([8, 6]); ctx.lineWidth = 3; ctx.strokeStyle = C.red;
+          ctx.beginPath(); ctx.arc(o.x, o.y, o.r * 1.1 * pulse, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        } else {
+          glowDisc(o.x, o.y, o.r * 0.8, col);
+          ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.85)';
+          ctx.beginPath(); ctx.arc(o.x, o.y, o.r * 1.05, 0, Math.PI * 2); ctx.stroke();
+          if (o.t > o.arrive){ ctx.strokeStyle = C.yellow; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.arc(o.x, o.y, o.r * 1.05, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * left); ctx.stroke(); }
+        }
+        // kleines Icon: Hand = wischen, Fuß = kicken, ! = nicht berühren
+        const bx = o.x + o.r * 0.8, by = o.y + o.r * 0.8, br = Math.max(11, o.r * 0.32);
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI * 2); ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+        if (avoid) label('!', bx, by + 1, br * 1.4, '#fff');
+        else ICON[o.d.act === 'kick' ? 'foot' : 'hand'](bx, by, br * 1.3, '#fff');
+      }
+      ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot);
+      ctx.font = `${Math.round(o.r * 1.45)}px "Apple Color Emoji","Noto Color Emoji","Segoe UI Emoji",sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(o.d.emoji, 0, o.r * 0.06);
+      ctx.restore();
+    }
+  },
+  stats(){ return [['Weg damit', S.hits], ['Verpasst / Boom', S.misses], ['Max Combo', '×' + S.maxCombo]]; }
+});
+
+// ---------- 4) WALL DODGE: Wänden ausweichen ----------
 GAMES.push({
   id: 'wall', name: 'Wall Dodge', icon: 'wall', col: C.red, dur: 75, met: 6, bpm: 120,
   desc: 'Ducken, springen, links oder rechts ausweichen!',
@@ -887,7 +1039,7 @@ GAMES.push({
   stats(){ return [['Ausgewichen', S.hits], ['Crashes', S.misses], ['Max Combo', '×' + S.maxCombo]]; }
 });
 
-// ---------- 4) STAR JUMPS: Hampelmänner mit Zielen oben/unten ----------
+// ---------- 5) STAR JUMPS: Hampelmänner mit Zielen oben/unten ----------
 GAMES.push({
   id: 'jacks', name: 'Star Jumps', icon: 'star', col: C.yellow, dur: 60, met: 8, bpm: 132,
   desc: 'Hampelmann! Hände abwechselnd zu den Zielen oben und unten.',
@@ -931,7 +1083,7 @@ GAMES.push({
   stats(){ return [['Wiederholungen', this.reps], ['Max Combo', '×' + S.maxCombo], ['pro Min', Math.round(this.reps / (this.dur / 60))]]; }
 });
 
-// ---------- 5) POSE MATCH: Posen nachmachen und halten ----------
+// ---------- 6) POSE MATCH: Posen nachmachen und halten ----------
 // Strichfiguren: [kopf, hals, hüfte, lHand, rHand, lFuß, rFuß, lKnie, rKnie, lEllbogen, rEllbogen] in 0..100
 const POSES = [
   { name: 'T-POSE',      fig: [[50,14],[50,28],[50,58],[8,30],[92,30],[40,94],[60,94],[42,76],[58,76],[28,29],[72,29]],
@@ -1038,10 +1190,10 @@ async function startGame(g){
     }
   } catch (err){
     console.error(err);
-    const https = location.protocol === 'https:' || location.hostname === 'localhost';
+    const https = NATIVE || location.protocol === 'https:' || location.hostname === 'localhost';
     overlay(`<h2>Kamera geht nicht</h2><p>${!https
       ? 'Die Kamera funktioniert im Browser nur über <b>https://</b>. Öffne die Seite über einen https-Link (z.B. GitHub Pages).'
-      : 'Bitte erlaube den Kamera-Zugriff (Safari: aA → Website-Einstellungen → Kamera → Erlauben) und lade die Seite neu.'}</p>
+      : NATIVE ? 'Bitte erlaube den Kamera-Zugriff: Einstellungen → FITTGAME → Kamera.' : 'Bitte erlaube den Kamera-Zugriff (Safari: aA → Website-Einstellungen → Kamera → Erlauben) und lade die Seite neu.'}</p>
       <button class="btn" onclick="location.reload()">Neu laden</button>`);
     return;
   }

@@ -6,6 +6,7 @@ Body-Tracking-Fitnessspiele im Browser: Die Kamera erkennt deinen Körper (Media
 |---|---|---|
 | ✋ Power Punch | 1:15 | Runden: Hände (richtige Hand), Sandsack-Combos 1-2-3, Beide Hände |
 | 🦶 Kick Attack | 1:00 | Runden: seitliche Kicks links/rechts, Knie hoch |
+| 💥 Smash Party | 1:15 | Monster & Obst wegwischen, Bälle & Dosen wegkicken, Bomben nicht berühren (5 Wellen) |
 | 🧱 Wall Dodge | 1:15 | Ducken, springen, links/rechts ausweichen |
 | ⭐ Star Jumps | 1:00 | Hampelmänner, Hände zu den Zielen oben/unten |
 | 🕺 Pose Match | 1:30 | Posen nachmachen und halten |
@@ -29,6 +30,28 @@ Alternative ohne GitHub Pages: `index.html` per Drag & Drop auf <https://app.net
 
 Lokal am Rechner: `python3 -m http.server` → <http://localhost:8000> (localhost darf die Kamera ohne https nutzen).
 
-## Später: iOS-App
+## iPhone- & iPad-App (Capacitor)
 
-Der Plan: dieselbe Spiellogik, aber Tracking mit Apples **Vision** (`VNDetectHumanBodyPoseRequest`) oder MediaPipe iOS, UI in SwiftUI/SpriteKit. Alternativ kann diese Web-Version schnell per Capacitor/WKWebView als App verpackt werden.
+Die App packt dieselbe `index.html` in eine native iOS-App (iPhone + iPad, ab iOS 15). MediaPipe, das Pose-Modell
+(`assets/pose_landmarker_lite.task`) und die Schrift liegen im App-Bundle, die App läuft also komplett offline.
+Native Extras: Kamera-Hinweistext, Ton auch bei Stumm-Schalter, Bildschirm bleibt während des Spiels an.
+
+**Du brauchst:** einen Mac mit Xcode (kostenlos im App Store), Node.js 20+ und eine Apple-ID.
+
+```bash
+npm install
+npm run ios          # baut www/, kopiert es ins Xcode-Projekt und öffnet Xcode
+```
+
+In Xcode:
+1. Links das Projekt **App** → Target **App** → **Signing & Capabilities** → bei *Team* deine Apple-ID wählen
+   (ggf. *Bundle Identifier* ändern, z.B. `com.deinname.fittgame`).
+2. iPhone per Kabel anschließen, oben als Ziel auswählen, **▶ Run** drücken.
+3. Beim ersten Mal am iPhone: *Einstellungen → Allgemein → VPN & Geräteverwaltung* → Entwickler vertrauen.
+
+Mit kostenloser Apple-ID läuft die App 7 Tage, danach einfach erneut aus Xcode starten. Für TestFlight / App Store
+brauchst du das Apple Developer Program (99 €/Jahr).
+
+Nach Änderungen an `index.html`: `npm run sync` (oder `npm run ios`).
+
+Jeder Push baut die App per GitHub Actions auf einem Mac (`.github/workflows/ios.yml`), damit Build-Fehler sofort auffallen.

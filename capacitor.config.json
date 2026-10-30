@@ -1,0 +1,11 @@
+{
+  "appId": "com.jakeey.fittgame",
+  "appName": "FITTGAME",
+  "webDir": "www",
+  "backgroundColor": "#0c0c0f",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0c0c0f",
+    "scrollEnabled": false
+  }
+}
