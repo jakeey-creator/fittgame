@@ -29,3 +29,11 @@ jobs:
       - name: Fehler anzeigen
         if: failure()
         run: grep -n -B2 -A6 "error" build.log | head -150 || tail -80 build.log
+      - name: Watch-App eingebettet?
+        run: |
+          P=$(echo ~/Library/Developer/Xcode/DerivedData/App-*/Build/Products)
+          ls "$P"
+          test -d "$P/Debug-watchsimulator/FittWatch.app"
+          test -d "$P/Debug-iphonesimulator/App.app/Watch/FittWatch.app"
+          /usr/libexec/PlistBuddy -c "Print :WKCompanionAppBundleIdentifier" -c "Print :CFBundleIdentifier" -c "Print :WKBackgroundModes" "$P/Debug-watchsimulator/FittWatch.app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$P/Debug-iphonesimulator/App.app/Info.plist"

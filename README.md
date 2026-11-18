@@ -1,42 +1,48 @@
 # FITTGAME
 
-Body-Tracking-Fitnessspiele im Browser: Die Kamera erkennt deinen Körper (MediaPipe Pose, läuft komplett auf dem Gerät), und du spielst 5 Bewegungsspiele von 1 bis 1,5 Minuten.
+Fitness als Spiel: Die Kamera erkennt deinen Körper, dein Puls steuert die Punkte. Du spielst Kurse aus mehreren
+Tracks mit Ziel-Pulszonen (ähnlich einem Studio-Kurs, nur als Game) oder einzelne Quick Games.
+Läuft als Web-App im Browser und als native iPhone-/iPad-App mit Apple-Watch-App.
 
-| Spiel | Dauer | Bewegung |
+## Was drin ist
+
+**Puls als Spielmechanik**
+- Profil (Alter, Gewicht, Ruhepuls) → fünf Pulszonen, Max-Puls nach Tanaka (208 − 0,7 × Alter) oder eigener Wert.
+- Live-Puls im Spiel mit Zonenfarbe. Jeder Track hat eine Zielzone: Bist du drin, zählt jeder Treffer **doppelt**.
+- Pulspunkte (mehr Punkte pro Minute in höheren Zonen), Kalorien aus dem Puls (Keytel-Formel), Pulskurve und Zeit pro Zone in der Auswertung.
+- Coach-Stimme sagt Tracks an und reagiert auf deinen Puls („Puls hoch“, „in der Zone“, „kurz rausnehmen“).
+
+**Pulsquellen** (automatisch die beste verfügbare)
+| Quelle | Wo | Hinweis |
 |---|---|---|
-| ✋ Power Punch | 1:15 | Runden: Hände (richtige Hand), Sandsack-Combos 1-2-3, Beide Hände |
-| 🦶 Kick Attack | 1:00 | Runden: seitliche Kicks links/rechts, Knie hoch |
-| 💥 Smash Party | 1:15 | Monster & Obst wegwischen, Bälle & Dosen wegkicken, Bomben nicht berühren (5 Wellen) |
-| 🧱 Wall Dodge | 1:15 | Ducken, springen, links/rechts ausweichen |
-| ⭐ Star Jumps | 1:00 | Hampelmänner, Hände zu den Zielen oben/unten |
-| 🕺 Pose Match | 1:30 | Posen nachmachen und halten |
+| Apple Watch (FITTGAME-Watch-App) | iPhone-App | startet mit dem Kurs automatisch ein Workout, sendet den Puls live, speichert das Training in Health |
+| Bluetooth-Brustgurt (Polar, Wahoo, Garmin …) | iPhone-App, Chrome | Profil → Pulsmessung → Verbinden |
+| Apple Health | iPhone-App | Rückfall, wenn auf der Watch ein anderes Workout läuft |
+| Schätzung aus der Bewegung | überall | ohne Sensor; als „≈ geschätzt“ markiert, kein Messwert |
 
-Look angelehnt an das Referenzvideo: natürliches Kamerabild, dezente Gelenk-Kreise, farbige Hand-/Fuß-Marker
-(blau/rot = linke/rechte Hand, türkis/pink = linker/rechter Fuß), Ziele mit Blitz und gestrichelter Führungslinie,
-Rundentitel („Sack 2 von 3“), Comic-Treffer („POW!“, „KICK!“, „PERFECT!“), ⚡ Energie + ×Combo und ein dunkler Ergebnis-Screen.
+**Kurse** (`js/courses.js`)
+| Kurs | Dauer | Inhalt |
+|---|---|---|
+| Quick Burn | ca. 7 min | 7 Tracks, einmal alles |
+| Combat Blast | ca. 12 min | Boxen & Kicken, zwei Puls-Gipfel |
+| Cardio Attack | ca. 12 min | Springen, Sprinten, Ausweichen |
+| HIIT Storm | ca. 10 min | 8 × 40 s Vollgas, 20 s Pause |
+| Flow & Reset | ca. 5 min | Posen, Balance, langsame Squats |
 
-Alle Sounds und die Musik werden live mit der Web Audio API erzeugt, es gibt keine Audiodateien.
+**Spiele** (als Tracks in Kursen und einzeln als Quick Game): Power Punch, Kick Attack, Smash Party, Wall Dodge,
+Star Jumps, Knee Sprint, Squat Power, Pose Match.
 
-## Auf dem iPhone testen
+**Fortschritt:** XP und Level, Tages-Serie, 7-Tage-Übersicht, Verlauf mit allen Einheiten. Alles bleibt auf dem Gerät.
 
-Kamera im Browser geht nur über **https**. Der einfachste Weg:
+## Im Browser testen
 
-1. GitHub → Repo → **Settings → Pages** → Source: *Deploy from a branch*, Branch wählen, Ordner `/ (root)` → Save.
-2. Nach ca. 1 Min. die Seite `https://<user>.github.io/fittgame/` in **Safari** öffnen.
-3. Kamera erlauben. Optional: Teilen → *Zum Home-Bildschirm*.
-4. Handy hochkant hinstellen, 2–3 m zurückgehen, ganzer Körper im Bild.
+Kamera geht nur über **https**: <https://jakeey-creator.github.io/fittgame/> in Safari öffnen.
+Lokal: `python3 -m http.server` → <http://localhost:8000>.
+Zum schnellen Durchklicken: `?short` an die Adresse hängen, dann sind alle Tracks stark verkürzt.
 
-Alternative ohne GitHub Pages: `index.html` per Drag & Drop auf <https://app.netlify.com/drop> ziehen.
+## iPhone-, iPad- und Watch-App
 
-Lokal am Rechner: `python3 -m http.server` → <http://localhost:8000> (localhost darf die Kamera ohne https nutzen).
-
-## iPhone- & iPad-App (Capacitor)
-
-Die App packt dieselbe `index.html` in eine native iOS-App (iPhone + iPad, ab iOS 15). MediaPipe, das Pose-Modell
-(`assets/pose_landmarker_lite.task`) und die Schrift liegen im App-Bundle, die App läuft also komplett offline.
-Native Extras: Kamera-Hinweistext, Ton auch bei Stumm-Schalter, Bildschirm bleibt während des Spiels an.
-
-**Du brauchst:** einen Mac mit Xcode (kostenlos im App Store), Node.js 20+ und eine Apple-ID.
+**Du brauchst:** Mac mit Xcode 16+, Node.js 20+, Apple-ID. Für die Watch-App: Apple Watch mit watchOS 10+.
 
 ```bash
 npm install
@@ -44,14 +50,35 @@ npm run ios          # baut www/, kopiert es ins Xcode-Projekt und öffnet Xcode
 ```
 
 In Xcode:
-1. Links das Projekt **App** → Target **App** → **Signing & Capabilities** → bei *Team* deine Apple-ID wählen
-   (ggf. *Bundle Identifier* ändern, z.B. `com.deinname.fittgame`).
-2. iPhone per Kabel anschließen, oben als Ziel auswählen, **▶ Run** drücken.
-3. Beim ersten Mal am iPhone: *Einstellungen → Allgemein → VPN & Geräteverwaltung* → Entwickler vertrauen.
+1. Projekt **App** → Target **App** → *Signing & Capabilities* → dein *Team* wählen.
+2. Dasselbe für das Target **FittWatch**.
+3. Falls die Bundle-ID schon vergeben ist: Projekt **App** → *Build Settings* → ganz unten *User-Defined* →
+   `FITT_BUNDLE_ID` ändern (z. B. `com.deinname.fittgame`). Die Watch-ID leitet sich automatisch daraus ab.
+4. iPhone anschließen, als Ziel wählen, **▶ Run**. Die Watch-App wird mit installiert
+   (sonst: Watch-App auf dem iPhone → *Verfügbare Apps* → FITTGAME installieren).
+5. Beim ersten Kurs: Kamera und Health erlauben (am iPhone und an der Watch).
 
-Mit kostenloser Apple-ID läuft die App 7 Tage, danach einfach erneut aus Xcode starten. Für TestFlight / App Store
-brauchst du das Apple Developer Program (99 €/Jahr).
+Mit kostenloser Apple-ID läuft die App 7 Tage, danach erneut aus Xcode starten.
 
-Nach Änderungen an `index.html`: `npm run sync` (oder `npm run ios`).
+**So arbeitet die Watch-Verbindung:** Beim Kursstart öffnet das iPhone die Watch-App (`startWatchApp`), die Watch
+startet ein HIIT-Workout und schickt Puls und Kalorien per WatchConnectivity ans iPhone. Das iPhone schickt Track,
+Restzeit, Energie und Zielzone zurück; die Watch zeigt das an und tippt dir ans Handgelenk, wenn du die Zone triffst.
 
-Jeder Push baut die App per GitHub Actions auf einem Mac (`.github/workflows/ios.yml`), damit Build-Fehler sofort auffallen.
+### Aufbau
+
+| Pfad | Inhalt |
+|---|---|
+| `index.html` | Oberfläche, Tracking (MediaPipe Pose), Spiele, Kurs-Ablauf, Sounds |
+| `js/pulse.js` | Profil, Zonen, Pulsquellen, Aufzeichnung, Kalorien |
+| `js/courses.js` | Kurse und Tracks |
+| `js/progress.js` | XP, Level, Serie, Verlauf |
+| `ios/App/App/FittPulsePlugin.swift` | Brücke Watch / Health / Bluetooth → Spiel |
+| `ios/App/FittWatch/` | watchOS-App (SwiftUI, HealthKit-Workout) |
+| `scripts/build-www.mjs` | baut `www/` mit lokalem MediaPipe, Modell und Schrift (App läuft offline) |
+| `scripts/add-watch-target.rb` | hat Watch-Target und Plugin ins Xcode-Projekt eingetragen |
+
+Jeder Push baut iPhone- und Watch-App per GitHub Actions auf einem Mac (`.github/workflows/ios.yml`).
+
+## Hinweis
+
+FITTGAME ist ein Fitnessspiel und kein Medizinprodukt. Puls- und Kalorienwerte sind Richtwerte.
