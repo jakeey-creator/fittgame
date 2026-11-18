@@ -104,10 +104,10 @@ export class PulseSession {
     while (this.acc >= 1){
       this.acc -= 1;
       if (!bpm) continue;
-      const z = zoneOf(bpm);
-      this.samples.push(bpm); this.zoneSecs[z]++; this.points += z / 12;      // Zone 3 = 15 Punkte pro Minute
+      const z = zoneOf(bpm), zs = Math.max(1, z);                              // unter 50 % zählt als Zone 1, gibt aber keine Punkte
+      this.samples.push(bpm); this.zoneSecs[zs]++; this.points += z / 12;     // Zone 3 = 15 Punkte pro Minute
       this.kcal += kcalPerMin(bpm) / 60; this.max = Math.max(this.max, bpm); this.sum += bpm; this.n++;
-      if (target && z >= target[0] && z <= target[1]) this.inTarget++;
+      if (target && zs >= target[0] && zs <= target[1]) this.inTarget++;
       if (source === 'estimate') this.estimated++;
     }
   }

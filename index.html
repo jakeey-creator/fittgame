@@ -139,7 +139,7 @@
   .pill{display:flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;border-radius:99px;background:rgba(18,18,22,.72);
     box-shadow:inset 0 0 0 2px var(--zc,#555);transition:box-shadow .3s}
   .pill svg{width:22px;height:22px;color:var(--zc,#888);animation:beat var(--beat,1s) ease-in-out infinite}
-  .pill b{font-size:26px;font-weight:800;line-height:1}
+  .pill b{font-size:30px;font-weight:800;line-height:1}
   .pill i{font-style:normal;font-size:13px;font-weight:800;color:var(--zc,#888)}
   .zbar{display:flex;gap:3px;margin-top:5px}
   .zbar u{width:20px;height:6px;border-radius:3px;background:rgba(255,255,255,.2);text-decoration:none;position:relative}
@@ -408,7 +408,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const mid = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, v: Math.min(a.v, b.v) });
 const FONT = '"Baloo 2", system-ui, sans-serif';
-const C = { yellow: '#ffd500', ink: '#2b2100', blue: '#1ea7ff', red: '#ff2e4d', teal: '#1de9b6', pink: '#ff2d7a' };
+const C = { yellow: '#ffd500', ink: '#2b2100', blue: '#1ea7ff', red: '#ff2e4d', teal: '#1de9b6', pink: '#ff2d7a', orange: '#ff8a1e', violet: '#8b5cff' };
 
 // ================================================================
 //  AUDIO: alle Sounds werden live synthetisiert
@@ -1678,7 +1678,7 @@ function endTrack(){
 
 function beginRest(){
   const n = run.tracks[run.idx + 1], g = GAME[n.game];
-  phase = 'rest'; restT = run.rest; S.mult = 1;
+  phase = 'rest'; restT = run.rest; S.mult = 1; lastCount = -1;
   playUI(false); Music.intensity = 0;
   $('#restTitle').textContent = `Track ${run.idx + 1} von ${run.tracks.length} geschafft`;
   $('#restNext').innerHTML = `<div class="ic" style="background:${g.col}">${icon(g.icon)}</div><div><b>${n.name}</b><span>${g.name} · ${mmss(n.dur)} · ${zoneText(n.zone)}</span></div>`;
