@@ -44,4 +44,5 @@ html = html.replace(/<link rel="preconnect"[^>]*>\n/g, '')
            .replace(/<link href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link rel="stylesheet" href="vendor/fonts.css">');
 if (html.includes('fonts.googleapis.com')) throw new Error('Google-Fonts-Link nicht ersetzt');
 await writeFile(join(www, 'index.html'), html);
+await cp(join(root, 'js'), join(www, 'js'), { recursive: true });
 console.log('www/ gebaut.');

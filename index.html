@@ -7,67 +7,150 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FITTGAME">
-<meta name="theme-color" content="#0c0c0f">
+<meta name="theme-color" content="#0a0a0d">
 <title>FITTGAME</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0c0c0f; --card:#1a1a20; --yellow:#ffd500; --ink:#2b2100;
-    --blue:#1ea7ff; --red:#ff2e4d; --teal:#1de9b6; --pink:#ff2d7a;
-    --text:#ffffff; --muted:#a4a4ae;
+    --bg:#0a0a0d; --card:#17171c; --card2:#202027; --line:rgba(255,255,255,.08);
+    --yellow:#ffd500; --ink:#2b2100; --blue:#1ea7ff; --red:#ff2e4d; --teal:#1de9b6; --pink:#ff2d7a; --orange:#ff8a1e; --violet:#8b5cff;
+    --text:#ffffff; --muted:#9c9ca8;
     --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
     --outline:0 2px 0 var(--ink),2px 0 0 var(--ink),-2px 0 0 var(--ink),0 -2px 0 var(--ink),
               2px 2px 0 var(--ink),-2px 2px 0 var(--ink),2px -2px 0 var(--ink),-2px -2px 0 var(--ink),0 5px 14px rgba(0,0,0,.45);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  input,select{user-select:text;-webkit-user-select:text}
   html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);
     font-family:'Baloo 2',system-ui,-apple-system,sans-serif;touch-action:manipulation;overscroll-behavior:none}
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+  svg.i{width:1em;height:1em;vertical-align:-.14em;flex:none}
   #video{position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none}
   #stage{position:fixed;inset:0;width:100%;height:100%;display:block}
   .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;
-    padding:calc(18px + var(--safe-t)) 16px calc(18px + var(--safe-b));overflow-y:auto;-webkit-overflow-scrolling:touch}
+    padding:calc(14px + var(--safe-t)) 16px calc(18px + var(--safe-b));overflow-y:auto;-webkit-overflow-scrolling:touch}
   .screen.on{display:flex}
+  .wrap{width:100%;max-width:620px}
   .bolt{display:inline-block;width:1em;height:1em;vertical-align:-.12em}
+  h2.sec{font-size:22px;font-weight:800;margin:22px 0 10px;display:flex;align-items:baseline;justify-content:space-between}
+  h2.sec small{font-size:13px;color:var(--muted);font-weight:700}
 
-  /* ---------- Menü ---------- */
-  #menu{background:radial-gradient(90% 50% at 50% 0%,#2a2410 0%,var(--bg) 70%)}
-  .logo{font-weight:800;font-size:clamp(40px,12vw,58px);line-height:1;margin:14px 0 0;color:var(--yellow);text-shadow:0 0 28px rgba(255,213,0,.35)}
-  .tag{color:var(--muted);font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase;margin:4px 0 18px}
-  .grid{width:100%;max-width:560px;display:grid;gap:10px}
-  .card{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;border:0;color:#fff;text-align:left;
-    font:inherit;cursor:pointer;background:var(--card);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);transition:transform .12s}
-  .card:active{transform:scale(.97)}
-  .card .ic{width:60px;height:60px;display:grid;place-items:center;border-radius:50%;flex:none;box-shadow:0 0 22px var(--glow)}
-  .card .ic svg{width:34px;height:34px}
-  .card h3{margin:0;font-weight:800;font-size:21px;line-height:1.1}
-  .card p{margin:2px 0 0;font-size:14.5px;color:#cfcfd6;line-height:1.25;font-weight:600}
-  .card .meta{position:absolute;right:12px;top:10px;font-size:12.5px;font-weight:800;color:var(--yellow)}
-  .card .best{font-size:12.5px;font-weight:700;color:var(--muted);margin-top:2px}
-  .tips{max-width:560px;width:100%;margin-top:14px;color:var(--muted);font-size:14px;line-height:1.45;font-weight:600;
-    background:rgba(255,255,255,.04);border-radius:18px;padding:12px 14px}
-  .tips b{color:#fff}
-  .row{display:flex;gap:10px;margin-top:18px}
-  .btn{border:0;font:inherit;font-weight:800;font-size:20px;color:var(--ink);padding:12px 28px;border-radius:99px;cursor:pointer;
-    background:var(--yellow);box-shadow:0 6px 24px rgba(255,213,0,.35)}
+  /* ---------- Tabs: Start / Verlauf / Profil ---------- */
+  .tab{background:var(--bg);padding-bottom:calc(96px + var(--safe-b))}
+  .tab::before{content:"";position:fixed;inset:-20% -30% auto -30%;height:70%;pointer-events:none;z-index:-1;
+    background:radial-gradient(40% 50% at 30% 30%,rgba(255,213,0,.16),transparent 70%),radial-gradient(40% 50% at 75% 20%,rgba(255,46,77,.14),transparent 70%),
+      radial-gradient(45% 55% at 55% 60%,rgba(30,167,255,.10),transparent 70%);animation:drift 14s ease-in-out infinite alternate}
+  @keyframes drift{to{transform:translate3d(4%,6%,0) scale(1.1)}}
+  #tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + var(--safe-b));display:none;gap:4px;padding:6px;border-radius:99px;z-index:6;
+    background:rgba(28,28,34,.86);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 10px 40px rgba(0,0,0,.5),inset 0 0 0 1px var(--line)}
+  #tabs.on{display:flex}
+  #tabs button{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:99px;font-weight:800;font-size:15px;color:var(--muted);transition:.2s}
+  #tabs button.on{background:var(--yellow);color:var(--ink)}
+  #tabs svg{width:20px;height:20px}
+
+  /* ---------- Start ---------- */
+  .top{display:flex;align-items:center;gap:12px;margin-top:4px}
+  .lvl{position:relative;width:62px;height:62px;flex:none}
+  .lvl svg{width:62px;height:62px;transform:rotate(-90deg)}
+  .lvl b{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:800;color:var(--yellow)}
+  .top h1{margin:0;font-size:24px;font-weight:800;line-height:1.05}
+  .top p{margin:0;font-size:14px;color:var(--muted);font-weight:700}
+  .chip{margin-left:auto;display:flex;align-items:center;gap:5px;background:var(--card);padding:7px 12px;border-radius:99px;font-weight:800;font-size:16px;
+    box-shadow:inset 0 0 0 1px var(--line)}
+  .chip svg{color:var(--orange);width:18px;height:18px}
+  .pulsecard{position:relative;margin-top:16px;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:24px;width:100%;text-align:left;overflow:hidden;
+    background:linear-gradient(135deg,#2a0d14,#17171c 60%);box-shadow:inset 0 0 0 1px rgba(255,46,77,.25)}
+  .heart{width:54px;height:54px;color:var(--red);flex:none;filter:drop-shadow(0 0 14px rgba(255,46,77,.6));animation:beat var(--beat,1s) ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.22)}24%{transform:scale(1)}36%{transform:scale(1.12)}48%{transform:scale(1)}}
+  .pulsecard .num{font-size:44px;font-weight:800;line-height:.9}
+  .pulsecard .num small{font-size:15px;color:var(--muted);margin-left:4px}
+  .pulsecard .src{font-size:13.5px;color:#d7d7de;font-weight:700;line-height:1.25;margin-top:3px}
+  .pulsecard .go{margin-left:auto;background:rgba(255,255,255,.1);padding:8px 14px;border-radius:99px;font-weight:800;font-size:14px;flex:none}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--muted)}
+  .dot.live{background:var(--teal);box-shadow:0 0 8px var(--teal)}
+  .week{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .tile{background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:inset 0 0 0 1px var(--line)}
+  .tile b{display:block;font-size:24px;font-weight:800;line-height:1.1}
+  .tile span{font-size:11.5px;color:var(--muted);font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+  .cap{font-size:12px;color:var(--muted);font-weight:700;text-align:center;margin-top:5px}
+  .courses{display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .courses::-webkit-scrollbar{display:none}
+  .course{position:relative;flex:none;width:min(78vw,300px);height:196px;border-radius:28px;padding:16px;text-align:left;overflow:hidden;scroll-snap-align:center;
+    display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 14px 34px rgba(0,0,0,.45);transition:transform .15s}
+  .course:active,.game:active{transform:scale(.97)}
+  .course .art{position:absolute;right:-26px;top:-22px;width:170px;height:170px;color:rgba(255,255,255,.2);transform:rotate(12deg)}
+  .course::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.5));pointer-events:none}
+  .course > *{position:relative;z-index:1}
+  .course .tagl{position:absolute;left:16px;top:14px;background:rgba(0,0,0,.28);padding:3px 10px;border-radius:99px;font-size:12.5px;font-weight:800}
+  .course h3{margin:0;font-size:30px;font-weight:800;line-height:1;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .course p{margin:2px 0 8px;font-size:14.5px;font-weight:700;opacity:.95}
+  .meta{display:flex;gap:10px;align-items:center;font-size:13.5px;font-weight:800}
+  .meta span{display:flex;align-items:center;gap:4px}
+  .flames svg{width:15px;height:15px}
+  .flames .off{opacity:.3}
+  .games{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .game{position:relative;display:flex;align-items:center;gap:10px;padding:12px;border-radius:20px;background:var(--card);text-align:left;
+    box-shadow:inset 0 0 0 1px var(--line);transition:transform .12s}
+  .game .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;box-shadow:0 0 18px var(--glow)}
+  .game .ic svg{width:25px;height:25px;color:#fff}
+  .game b{display:block;font-size:16.5px;font-weight:800;line-height:1.1}
+  .game span{font-size:12.5px;color:var(--muted);font-weight:700}
+
+  /* ---------- Kurs-Details ---------- */
+  #sheet{padding:0;background:var(--bg);z-index:7}
+  .hero{position:relative;width:100%;padding:calc(54px + var(--safe-t)) 20px 20px;overflow:hidden;flex:none}
+  .hero .art{position:absolute;right:-30px;top:-10px;width:230px;height:230px;color:rgba(255,255,255,.18);transform:rotate(12deg)}
+  .hero h2{position:relative;margin:0;font-size:42px;font-weight:800;line-height:1}
+  .hero p{position:relative;margin:6px 0 12px;font-size:16px;font-weight:700;max-width:440px;line-height:1.3}
+  .x{position:absolute;right:14px;top:calc(12px + var(--safe-t));width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.35);font-size:17px;z-index:2}
+  .tracks{width:100%;max-width:620px;padding:14px 16px calc(110px + var(--safe-b))}
+  .trk{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .trk i{font-style:normal;width:22px;color:var(--muted);font-weight:800;text-align:center}
+  .trk .ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .trk .ic svg{width:21px;height:21px;color:#fff}
+  .trk b{display:block;font-size:17px;font-weight:800;line-height:1.1}
+  .trk span{font-size:13px;color:var(--muted);font-weight:700}
+  .trk .r{margin-left:auto;text-align:right;font-weight:800;font-size:14px}
+  .zc{display:inline-flex;gap:3px;margin-top:3px}
+  .zc u{display:block;width:13px;height:7px;border-radius:3px;background:var(--card2);text-decoration:none}
+  .cta{position:fixed;left:0;right:0;bottom:0;padding:14px 16px calc(16px + var(--safe-b));background:linear-gradient(180deg,transparent,var(--bg) 40%);display:flex;justify-content:center;z-index:3}
+  .btn{font-weight:800;font-size:20px;color:var(--ink);padding:13px 30px;border-radius:99px;background:var(--yellow);box-shadow:0 6px 24px rgba(255,213,0,.35);transition:transform .12s}
+  .btn.wide{width:100%;max-width:420px}
   .btn.alt{background:rgba(255,255,255,.12);color:#fff;box-shadow:none}
+  .btn.small{font-size:15px;padding:9px 18px}
   .btn:active{transform:scale(.96)}
 
-  /* ---------- Spiel-HUD (wie im Referenzvideo) ---------- */
+  /* ---------- Spiel-HUD ---------- */
+  #trackbar{position:fixed;left:14px;right:14px;top:calc(6px + var(--safe-t));display:none;gap:4px;pointer-events:none}
+  #trackbar.on{display:flex}
+  #trackbar u{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden;text-decoration:none}
+  #trackbar u s{display:block;height:100%;width:0;background:var(--yellow);border-radius:3px}
   #hud{position:fixed;left:0;right:0;top:0;display:none;justify-content:space-between;align-items:flex-start;
-    padding:calc(12px + var(--safe-t)) 18px 0;pointer-events:none}
+    padding:calc(18px + var(--safe-t)) 16px 0;pointer-events:none}
   #hud.on{display:flex}
   .energy{display:flex;align-items:center;gap:6px}
   .energy .bolt{width:40px;height:40px;filter:drop-shadow(0 0 8px rgba(255,213,0,.6))}
   #hScore{font-weight:800;font-size:40px;line-height:1;color:var(--yellow);text-shadow:var(--outline)}
   #hCombo{font-weight:800;font-size:17px;color:#fff;margin:-2px 0 0 50px;text-shadow:0 2px 6px rgba(0,0,0,.7)}
-  #hTime{font-weight:800;font-size:24px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.7);padding-top:6px}
+  #hTime{font-weight:800;font-size:24px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.7);padding-top:6px;min-width:60px;text-align:right}
+  #hPulse{position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-t));display:flex;flex-direction:column;align-items:center}
+  .pill{display:flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;border-radius:99px;background:rgba(18,18,22,.72);
+    box-shadow:inset 0 0 0 2px var(--zc,#555);transition:box-shadow .3s}
+  .pill svg{width:22px;height:22px;color:var(--zc,#888);animation:beat var(--beat,1s) ease-in-out infinite}
+  .pill b{font-size:26px;font-weight:800;line-height:1}
+  .pill i{font-style:normal;font-size:13px;font-weight:800;color:var(--zc,#888)}
+  .zbar{display:flex;gap:3px;margin-top:5px}
+  .zbar u{width:20px;height:6px;border-radius:3px;background:rgba(255,255,255,.2);text-decoration:none;position:relative}
+  .zbar u.t::after{content:"";position:absolute;left:0;right:0;top:9px;height:3px;border-radius:2px;background:#fff}
+  #zflag{margin-top:9px;font-size:14px;font-weight:800;color:var(--ink);background:var(--yellow);padding:1px 10px;border-radius:99px;opacity:0;transform:scale(.6);transition:.25s}
+  #zflag.on{opacity:1;transform:scale(1);box-shadow:0 0 18px rgba(255,213,0,.7)}
   #title{position:fixed;left:0;right:0;top:calc(21% + var(--safe-t) * .5);text-align:center;font-weight:800;
     font-size:clamp(30px,9vw,46px);color:var(--yellow);text-shadow:var(--outline);pointer-events:none;display:none;padding:0 12px;line-height:1.05}
   #title.pop{animation:tpop .35s ease-out}
   @keyframes tpop{0%{transform:scale(.7)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
-  #badge{position:fixed;left:50%;top:calc(6% + var(--safe-t));width:116px;height:116px;margin-left:-58px;border-radius:50%;
+  #badge{position:fixed;left:50%;top:calc(27% + var(--safe-t));width:116px;height:116px;margin-left:-58px;border-radius:50%;
     background:rgba(28,28,32,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0}
   #badge svg{width:56px;height:56px}
   #badge b{font-weight:800;font-size:20px;line-height:1;margin-top:2px}
@@ -80,31 +163,89 @@
   #brand{position:fixed;left:16px;bottom:calc(14px + var(--safe-b));font-weight:800;font-size:17px;display:none;align-items:center;gap:4px;
     text-shadow:0 2px 6px rgba(0,0,0,.6);pointer-events:none}
   #brand .bolt{width:22px;height:22px}
-  .ctrl{position:fixed;bottom:calc(10px + var(--safe-b));width:42px;height:42px;border-radius:50%;border:0;color:#fff;font-size:17px;
-    background:rgba(20,20,24,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);z-index:5}
-  #quit{right:14px;display:none}
-  #mute{right:64px}
-  #menu.on ~ #mute{right:14px}
+  .ctrl{position:fixed;bottom:calc(10px + var(--safe-b));width:42px;height:42px;border-radius:50%;color:#fff;font-size:17px;
+    background:rgba(20,20,24,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);z-index:5;display:none}
+  #quit{right:14px} #mute{right:64px}
 
-  /* ---------- Overlay + Ergebnis ---------- */
-  #overlay{background:rgba(12,12,15,.7);justify-content:center;text-align:center;pointer-events:none}
-  #overlay h2{font-weight:800;font-size:clamp(28px,8vw,40px);margin:0 0 4px;color:var(--yellow);text-shadow:var(--outline)}
+  /* ---------- Overlay, Pause, Onboarding ---------- */
+  #overlay{background:rgba(10,10,13,.75);justify-content:center;text-align:center;z-index:8}
+  #overlay h2,#rest h2{font-weight:800;font-size:clamp(28px,8vw,40px);margin:0 0 4px;color:var(--yellow);text-shadow:var(--outline)}
   #overlay p{max-width:420px;color:#e8e8ee;font-size:18px;font-weight:600;line-height:1.4;margin:0 auto}
-  #overlay .btn{pointer-events:auto;margin-top:18px}
+  #overlay .btn{margin-top:18px}
   .spinner{width:56px;height:56px;border-radius:50%;border:6px solid rgba(255,255,255,.15);border-top-color:var(--yellow);animation:spin 1s linear infinite;margin:0 auto 18px}
   @keyframes spin{to{transform:rotate(360deg)}}
-  #results{background:rgba(8,8,10,.55);justify-content:center;text-align:center}
-  #results > .bolt{width:110px;height:110px;filter:drop-shadow(0 0 22px rgba(255,213,0,.55));animation:tpop .5s ease-out}
-  .big{font-weight:800;font-size:clamp(84px,28vw,130px);line-height:.9;color:var(--yellow);text-shadow:var(--outline)}
-  .unit{font-weight:800;font-size:22px;letter-spacing:2px;margin-top:4px}
-  #rTitle{font-weight:800;font-size:22px;margin-top:14px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
-  .stars{font-size:30px;letter-spacing:4px;margin-top:2px}
+  #rest{background:rgba(8,8,10,.6);justify-content:center;text-align:center;pointer-events:none}
+  #rest .cnt{font-size:120px;font-weight:800;line-height:.9;color:#fff;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+  #rest .lab{font-size:14px;font-weight:800;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-top:14px}
+  #rest .next{display:inline-flex;align-items:center;gap:12px;background:rgba(24,24,28,.85);border-radius:22px;padding:12px 18px;margin-top:8px;text-align:left}
+  #rest .next .ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center}
+  #rest .next .ic svg{width:27px;height:27px;color:#fff}
+  #rest .next b{display:block;font-size:22px;font-weight:800;line-height:1.05}
+  #rest .next span{font-size:14px;color:#cfcfd6;font-weight:700}
+  #rest .bpm{margin-top:16px;font-size:22px;font-weight:800;display:flex;gap:8px;justify-content:center;align-items:center}
+  #rest .bpm svg{width:24px;height:24px;color:var(--red);animation:beat var(--beat,1s) infinite}
+  #setup{background:var(--bg);justify-content:center;z-index:9}
+  #setup h2{font-size:38px;font-weight:800;margin:0;line-height:1}
+  #setup p{color:#d4d4dc;font-size:16.5px;font-weight:600;line-height:1.4;margin:8px 0 18px}
+
+  /* ---------- Formulare ---------- */
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .f{background:var(--card);border-radius:18px;padding:8px 14px;box-shadow:inset 0 0 0 1px var(--line)}
+  .f.full{grid-column:1/-1}
+  .f label{display:block;font-size:11.5px;color:var(--muted);font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+  .f input{width:100%;background:none;border:0;outline:0;color:#fff;font:inherit;font-size:22px;font-weight:800;padding:0}
+  .seg{display:flex;gap:6px;margin-top:4px}
+  .seg button{flex:1;padding:5px 0;border-radius:12px;background:var(--card2);font-weight:800;font-size:16px;color:var(--muted)}
+  .seg button.on{background:var(--yellow);color:var(--ink)}
+  .rowc{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border-radius:18px;padding:12px 14px;margin-top:10px;
+    box-shadow:inset 0 0 0 1px var(--line);font-weight:700;font-size:15.5px;line-height:1.3}
+  .rowc b{font-weight:800;font-size:17px;display:block}
+  .rowc small{color:var(--muted);font-size:13.5px;font-weight:700}
+  .sw{width:52px;height:30px;border-radius:99px;background:var(--card2);position:relative;flex:none;transition:.2s}
+  .sw::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+  .sw.on{background:var(--yellow)} .sw.on::after{left:25px}
+  .zt{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;background:var(--card);border-radius:18px;padding:12px 14px;margin-top:10px;
+    box-shadow:inset 0 0 0 1px var(--line);font-weight:800;font-size:15px}
+  .zt i{font-style:normal;width:30px;text-align:center;border-radius:8px;color:#0a0a0d;padding:1px 0}
+  .zt span{color:var(--muted)}
+  .note{color:var(--muted);font-size:13px;font-weight:600;line-height:1.45;margin:14px 2px 0}
+
+  /* ---------- Auswertung + Verlauf ---------- */
+  #results{background:rgba(8,8,10,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:7;padding-bottom:calc(30px + var(--safe-b))}
+  .rhead{text-align:center;margin-top:8px}
+  .rhead small{font-size:13px;font-weight:800;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  .rhead h2{margin:0;font-size:34px;font-weight:800;line-height:1.05;color:var(--yellow);text-shadow:var(--outline)}
+  .stars{font-size:30px;letter-spacing:4px}
   .stars .off{opacity:.2;filter:grayscale(1)}
-  .stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0 0}
-  .stat{background:rgba(255,255,255,.08);border-radius:16px;padding:6px 14px;min-width:90px}
-  .stat b{display:block;font-weight:800;font-size:22px;line-height:1.2}
-  .stat span{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:1px}
-  .newbest{color:var(--yellow);font-weight:800;letter-spacing:1px;margin-top:4px;min-height:22px}
+  .big3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .big3 .tile{text-align:center;padding:12px 6px}
+  .big3 .tile svg{width:26px;height:26px}
+  .big3 .tile b{font-size:36px}
+  .xp{background:var(--card);border-radius:18px;padding:12px 14px;margin-top:8px;box-shadow:inset 0 0 0 1px var(--line)}
+  .xp .l{display:flex;justify-content:space-between;font-weight:800;font-size:15px}
+  .xp .l em{font-style:normal;color:var(--yellow)}
+  .bar{height:10px;border-radius:5px;background:var(--card2);overflow:hidden;margin-top:6px}
+  .bar s{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--yellow),var(--orange));width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+  .lvup{margin-top:8px;text-align:center;font-weight:800;font-size:20px;color:var(--ink);background:var(--yellow);border-radius:14px;padding:6px;animation:tpop .5s ease-out}
+  .panel{background:var(--card);border-radius:18px;padding:12px 14px;margin-top:8px;box-shadow:inset 0 0 0 1px var(--line)}
+  .panel h4{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;display:flex;justify-content:space-between}
+  .panel h4 em{font-style:normal;color:#fff;letter-spacing:0;text-transform:none;font-size:14px}
+  #rChart{width:100%;height:120px;display:block}
+  .zrow{display:grid;grid-template-columns:104px 1fr 46px;gap:8px;align-items:center;font-weight:800;font-size:14px;margin-top:5px}
+  .zrow .bar{margin:0;height:12px} .zrow .bar s{background:var(--c)}
+  .zrow span{text-align:right;color:var(--muted)}
+  .tl{display:flex;justify-content:space-between;font-weight:700;font-size:15px;padding:4px 0;border-bottom:1px solid var(--line)}
+  .tl:last-child{border:0} .tl b{font-weight:800;color:var(--yellow)}
+  .row{display:flex;gap:10px;margin-top:16px;justify-content:center}
+  .hist{display:flex;align-items:center;gap:12px;width:100%;background:var(--card);border-radius:20px;padding:12px 14px;margin-top:8px;text-align:left;
+    box-shadow:inset 0 0 0 1px var(--line)}
+  .hist .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none}
+  .hist .ic svg{width:24px;height:24px;color:#fff}
+  .hist b{display:block;font-size:18px;font-weight:800;line-height:1.1}
+  .hist span{font-size:13px;color:var(--muted);font-weight:700}
+  .hist .r{margin-left:auto;text-align:right;font-weight:800;font-size:15px;line-height:1.25}
+  .hist .r em{font-style:normal;color:var(--yellow)}
+  .empty{text-align:center;color:var(--muted);font-weight:700;margin-top:60px;font-size:16px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -127,13 +268,28 @@
     <symbol id="i-right" viewBox="0 0 24 24"><path d="M10 4l8 8-8 8M18 12H4" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M4 10l8 8 8-8M12 18V3" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M4 14l8-8 8 8M12 6v15" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13.5 1.5 4 13.6h6.4L8.9 22.5 20 9.9h-6.6z" fill="currentColor"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21.2 3.6 12.9a5.4 5.4 0 0 1 0-7.7 5.5 5.5 0 0 1 7.7 0l.7.7.7-.7a5.5 5.5 0 0 1 7.7 0 5.4 5.4 0 0 1 0 7.7z" fill="currentColor"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2c1 3.5 5.5 5.6 5.5 11a5.5 5.5 0 0 1-11 0c0-1.9.8-3.3 1.8-4.5.3 1.6 1 2.5 2 3C10 8.5 10.5 5 12 2z" fill="currentColor"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 7.500V12l3 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 3.5 20.5 11v8.500a1 1 0 0 1-1 1H14.500v-6h-5v6H4.500a1 1 0 0 1-1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6h5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.2" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/></symbol>
+    <symbol id="i-run" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="15.5" cy="4" r="2.1" fill="currentColor"/><path d="M8 9.500l4-2 3 3 3.5 1M12 7.500l-1.5 6 3.5 3v5M10.5 13.5 8 16.500H4.5"/></g></symbol>
+    <symbol id="i-squat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2.1" fill="currentColor"/><path d="M5 9h14M12 8v6M12 14l-5 1.5 1 6M12 14l5 1.5-1 6"/></g></symbol>
   </defs>
 </svg>
 
+<div id="trackbar"></div>
 <div id="hud">
   <div>
     <div class="energy"><svg class="bolt"><use href="#i-bolt"/></svg><span id="hScore">0</span></div>
     <div id="hCombo">×0</div>
+  </div>
+  <div id="hPulse">
+    <div class="pill" id="hPill"><svg><use href="#i-heart"/></svg><b id="hBpm">--</b><i id="hZone"></i></div>
+    <div class="zbar" id="hZbar"><u></u><u></u><u></u><u></u><u></u></div>
+    <div id="zflag">ZONE ×2</div>
   </div>
   <div id="hTime">60s</div>
 </div>
@@ -142,37 +298,85 @@
 <div id="callout"></div>
 <div id="brand"><svg class="bolt"><use href="#i-bolt"/></svg>FITTGAME</div>
 
-<section id="menu" class="screen on">
-  <div class="logo"><svg class="bolt"><use href="#i-bolt"/></svg>FITTGAME</div>
-  <div class="tag">Move · Hit · Sweat</div>
-  <div class="grid" id="cards"></div>
-  <div class="tips">
-    <b>So geht's:</b> Handy <b>hochkant</b> an eine Wand lehnen, <b>2–3 m</b> zurückgehen,
-    sodass du <b>von Kopf bis Fuß</b> im Bild bist. Gutes Licht hilft beim Tracking.
-    Kein Ton? Prüfe den <b>Stumm-Schalter</b>. Das Video bleibt auf deinem Gerät.
+<section id="home" class="screen tab on"><div class="wrap">
+  <div class="top">
+    <div class="lvl"><svg viewBox="0 0 62 62"><circle cx="31" cy="31" r="27" fill="none" stroke="#26262e" stroke-width="6"/>
+      <circle id="lvlRing" cx="31" cy="31" r="27" fill="none" stroke="#ffd500" stroke-width="6" stroke-linecap="round" stroke-dasharray="170" stroke-dashoffset="170"/></svg><b id="lvlNum">1</b></div>
+    <div><h1 id="hello">FITTGAME</h1><p id="rank">Rookie</p></div>
+    <div class="chip"><svg><use href="#i-flame"/></svg><span id="streak">0</span></div>
   </div>
+  <button class="pulsecard" id="pulseCard">
+    <svg class="heart"><use href="#i-heart"/></svg>
+    <div><div class="num"><span id="pcBpm">--</span><small>bpm</small></div><div class="src" id="pcSrc"></div></div>
+    <span class="go">Puls</span>
+  </button>
+  <div class="week">
+    <div class="tile"><b id="wPts">0</b><span>Pulspunkte</span></div>
+    <div class="tile"><b id="wKcal">0</b><span>Kalorien</span></div>
+    <div class="tile"><b id="wMin">0</b><span>Minuten</span></div>
+  </div>
+  <div class="cap">Deine letzten 7 Tage</div>
+  <h2 class="sec">Kurse <small>Tracks mit Ziel-Pulszonen</small></h2>
+  <div class="courses" id="courses"></div>
+  <h2 class="sec">Quick Games <small>1 bis 1,5 Minuten</small></h2>
+  <div class="games" id="games"></div>
+</div></section>
+
+<section id="history" class="screen tab"><div class="wrap">
+  <h2 class="sec" style="margin-top:6px">Verlauf</h2>
+  <div id="histList"></div>
+</div></section>
+
+<section id="me" class="screen tab"><div class="wrap">
+  <h2 class="sec" style="margin-top:6px">Profil</h2>
+  <div class="form" id="meForm"></div>
+  <h2 class="sec">Deine Pulszonen <small id="maxInfo"></small></h2>
+  <div class="zt" id="zoneTable"></div>
+  <h2 class="sec">Pulsmessung</h2>
+  <div id="pulseSetup"></div>
+  <h2 class="sec">Einstellungen</h2>
+  <div class="rowc"><div><b>Coach-Stimme</b><small>Sagt Tracks, Pulszonen und Motivation an</small></div><button class="sw" id="swCoach"></button></div>
+  <div class="rowc"><div><b>Ton &amp; Musik</b><small>Soundeffekte und Beat</small></div><button class="sw" id="swSound"></button></div>
+  <div class="rowc"><div><b>Fortschritt zurücksetzen</b><small>Löscht Level, Serie und Verlauf auf diesem Gerät</small></div><button class="btn alt small" id="resetAll">Löschen</button></div>
+  <p class="note">FITTGAME ist ein Fitnessspiel und kein Medizinprodukt. Pulswerte und Kalorien sind Richtwerte. Hör auf deinen Körper, mach Pausen,
+    und sprich bei Herz-Kreislauf-Problemen vorher mit einem Arzt. Kamerabild und Daten bleiben auf deinem Gerät.</p>
+</div></section>
+
+<nav id="tabs" class="on">
+  <button data-tab="home" class="on"><svg><use href="#i-home"/></svg>Start</button>
+  <button data-tab="history"><svg><use href="#i-chart"/></svg>Verlauf</button>
+  <button data-tab="me"><svg><use href="#i-user"/></svg>Profil</button>
+</nav>
+
+<section id="sheet" class="screen"></section>
+
+<section id="rest" class="screen">
+  <h2 id="restTitle">Pause</h2>
+  <div class="cnt" id="restCnt">10</div>
+  <div class="bpm"><svg><use href="#i-heart"/></svg><span id="restBpm">--</span></div>
+  <div class="lab">Gleich geht's weiter mit</div>
+  <div><div class="next" id="restNext"></div></div>
 </section>
+
+<section id="results" class="screen"><div class="wrap" id="resBody"></div></section>
+
+<section id="setup" class="screen"><div class="wrap">
+  <h2><svg class="bolt"><use href="#i-bolt"/></svg> Willkommen bei FITTGAME</h2>
+  <p>Dein Körper ist der Controller, dein Puls der Punkte-Booster. Mit Alter und Gewicht berechnen wir deine Pulszonen und Kalorien.</p>
+  <div class="form" id="setupForm"></div>
+  <div class="row"><button class="btn wide" id="setupGo">Los geht's</button></div>
+  <p class="note">Die Angaben bleiben nur auf diesem Gerät. Du kannst sie später im Profil ändern.</p>
+</div></section>
 
 <section id="overlay" class="screen"></section>
-
-<section id="results" class="screen">
-  <svg class="bolt"><use href="#i-bolt"/></svg>
-  <div class="big" id="rScore">0</div>
-  <div class="unit">ENERGIE</div>
-  <div id="rTitle">Geschafft!</div>
-  <div class="stars" id="rStars"></div>
-  <div class="newbest" id="rBest"></div>
-  <div class="stats" id="rStats"></div>
-  <div class="row">
-    <button class="btn" id="again">Nochmal</button>
-    <button class="btn alt" id="toMenu">Menü</button>
-  </div>
-</section>
 
 <button id="quit" class="ctrl" aria-label="Beenden">✕</button>
 <button id="mute" class="ctrl" aria-label="Ton an/aus">🔊</button>
 
 <script type="module">
+import { Pulse, PulseSession, profile, saveProfile, ZONES, zoneCol, zoneOf, zoneRange, maxHr, kcalPerMin } from './js/pulse.js';
+import { Progress } from './js/progress.js';
+import { COURSES, courseSecs, courseMins } from './js/courses.js';
 // ================================================================
 //  FITTGAME: Body-Tracking-Fitnessspiele (MediaPipe Pose + WebAudio)
 // ================================================================
@@ -270,6 +474,7 @@ const Audio = {
     this.tone(f, 0.18, { type: 'triangle', vol: 0.3 }); this.tone(f * 2, 0.08, { type: 'square', vol: 0.06 }); },
   swipe(){ this.noiseHit(0.22, { vol: 0.4, freq: 900, q: 1.4, sweep: 5 }); this.tone(420, 0.14, { type: 'triangle', vol: 0.2, slide: 2.2 }); },
   boom(){ this.crash(); this.noiseHit(0.8, { vol: 0.5, freq: 200, q: 0.5, type: 'lowpass', sweep: 0.3, t: 0.05 }); this.tone(60, 0.6, { type: 'sine', vol: 0.7, slide: 0.5 }); },
+  step(side){ this.tone(side ? 300 : 260, 0.06, { type: 'sine', vol: 0.3, slide: 0.6 }); this.noiseHit(0.04, { vol: 0.15, freq: 5000 }); },
   tick(){ this.tone(1200, 0.04, { type: 'square', vol: 0.07 }); },
   hold(p){ this.tone(400 + p * 600, 0.05, { type: 'sine', vol: 0.12 }); },
   combo(){ [0, 5, 9, 12].forEach((n, i) => this.tone(523 * Math.pow(2, n / 12), 0.18, { type: 'square', vol: 0.1, t: i * 0.07 })); },
@@ -290,6 +495,7 @@ const Music = {
     this.timer = setInterval(() => this.schedule(), 25);
   },
   stop(){ this.on = false; clearInterval(this.timer); },
+  restart(bpm){ this.stop(); this.start(bpm); },
   schedule(){
     const c = Audio.ctx;
     const sp = 60 / this.bpm / 4;
@@ -332,6 +538,8 @@ const Music = {
 let landmarker = null, camReady = false, lastVideoTime = -1, prevPts = null;
 let body = null;          // aktuelle Körperdaten in Bildschirm-Koordinaten (gespiegelt)
 let lastSeen = 0;
+let motion = 0, lastDetectT = 0;   // Bewegungsintensität in Körperlängen pro Sekunde (für die Puls-Schätzung)
+const MOTION_PTS = [0, 15, 16, 23, 24, 25, 26, 27, 28];
 
 async function startCamera(){
   if (camReady) return;
@@ -368,16 +576,21 @@ function detect(){
   let res;
   try { res = landmarker.detectForVideo(video, performance.now()); } catch { return; }
   const lms = res?.landmarks?.[0];
-  if (!lms){ body = null; prevPts = null; return; }
+  if (!lms){ body = null; prevPts = null; motion *= 0.9; return; }
   const r = coverRect();
   const pts = lms.map((l, i) => {
     let x = W - (r.dx + l.x * r.w), y = r.dy + l.y * r.h;
     if (prevPts){ const p = prevPts[i]; x = p.x + (x - p.x) * 0.65; y = p.y + (y - p.y) * 0.65; }
     return { x, y, v: l.visibility ?? 1 };
   });
-  prevPts = pts;
   const sh = mid(pts[11], pts[12]), hp = mid(pts[23], pts[24]);
   const T = Math.max(30, dist(sh, hp));
+  const nowT = performance.now() / 1000, dtD = clamp(nowT - lastDetectT, 0.01, 0.2); lastDetectT = nowT;
+  if (prevPts){
+    const sp = MOTION_PTS.reduce((a, i) => a + dist(pts[i], prevPts[i]), 0) / MOTION_PTS.length / T / dtD;
+    motion += (Math.min(sp, 6) - motion) * 0.12;
+  }
+  prevPts = pts;
   body = {
     P: pts, sh, hp, T, SW: Math.max(20, dist(pts[11], pts[12])),
     nose: pts[0], lw: pts[15], rw: pts[16], le: pts[13], re: pts[14],
@@ -605,10 +818,10 @@ function roundRect(x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.ar
 // ================================================================
 //  SPIEL-STATUS (gemeinsam): Energie ⚡ + Combo ×N wie im Video
 // ================================================================
-const S = { score: 0, combo: 0, maxCombo: 0, hits: 0, misses: 0 };
+const S = { score: 0, combo: 0, maxCombo: 0, hits: 0, misses: 0, mult: 1 };   // mult = 2, solange der Puls in der Zielzone ist
 let base = null;   // Kalibrierung: Ruhehaltung
 function good(x = W / 2, y = H / 2, pts = 1){
-  S.score += pts; S.hits++; S.combo++; S.maxCombo = Math.max(S.maxCombo, S.combo);
+  S.score += pts * S.mult; S.hits++; S.combo++; S.maxCombo = Math.max(S.maxCombo, S.combo);
   Audio.hit(S.combo);
   if (S.combo % 10 === 0){
     words.push({ text: '×' + S.combo, x, y: y - 60, life: 1, max: 1, rot: -0.1, size: 44 });
@@ -618,10 +831,10 @@ function good(x = W / 2, y = H / 2, pts = 1){
 }
 function bad(){ S.misses++; S.combo = 0; Audio.miss(); }
 
-function setTitle(text){
+function setTitle(text, quiet){
   const el = $('#title');
   if (!text){ el.style.display = 'none'; el.textContent = ''; return; }
-  if (el.textContent !== text){ el.textContent = text; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+  if (el.textContent !== text){ el.textContent = text; if (!quiet){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); } }
   el.style.display = 'block';
 }
 function badge(icon, text, col){
@@ -654,7 +867,7 @@ function touches(limb, t, extra = 0.12){
 function fit(x, y, r){ return { x: clamp(x, r + 8, W - r - 8), y: clamp(y, Math.max(r + 110, H * 0.3 + r * 0.6), H - r - 30) }; }
 
 // ================================================================
-//  DIE 6 SPIELE
+//  DIE 8 SPIELE
 // ================================================================
 const GAMES = [];
 
@@ -696,7 +909,7 @@ GAMES.push({
     return [{ ...fit(sh.x - dx, y, r), r, limb: 'lh', age: 0, lock: 0 }, { ...fit(sh.x + dx, y, r), r, limb: 'rh', age: 0, lock: 0 }];
   },
   finishRound(){
-    if (this.roundMiss === 0){ bigWord('PERFECT!'); Audio.bonus(); S.score += 1; }
+    if (this.roundMiss === 0){ bigWord('PERFECT!'); Audio.bonus(); S.score += S.mult; }
     this.nextRound();
   },
   update(dt){
@@ -889,7 +1102,7 @@ GAMES.push({
   },
   update(dt){
     this.el += dt;
-    if (this.wave < SMASH_WAVES.length - 1 && this.el >= (this.wave + 1) * 15) this.nextWave();
+    if (this.wave < SMASH_WAVES.length - 1 && this.el >= (this.wave + 1) * (this.runDur || this.dur) / SMASH_WAVES.length) this.nextWave();
     this.track();
     this.spawnT -= dt;
     const active = this.objs.filter(o => o.state === 'in').length;
@@ -1080,7 +1293,7 @@ GAMES.push({
     for (const t of this.targets()) drawTarget(t);
     if (this.el - this.lastRep > 4 && this.el > 4) label('Arme über den Kopf & Beine auseinander', W / 2, H - 80, 17, '#fff');
   },
-  stats(){ return [['Wiederholungen', this.reps], ['Max Combo', '×' + S.maxCombo], ['pro Min', Math.round(this.reps / (this.dur / 60))]]; }
+  stats(){ return [['Wiederholungen', this.reps], ['Max Combo', '×' + S.maxCombo], ['pro Min', Math.round(this.reps / ((this.runDur || this.dur) / 60))]]; }
 });
 
 // ---------- 6) POSE MATCH: Posen nachmachen und halten ----------
@@ -1154,104 +1367,416 @@ function drawFigure(f, x, y, w, h, col){
   ctx.fillStyle = col; ctx.beginPath(); ctx.arc(...p(0), w * 0.09, 0, Math.PI * 2); ctx.fill();
 }
 
-// ================================================================
-//  ABLAUF: Menü → Laden → Kalibrieren → Countdown → Spiel → Ergebnis
-// ================================================================
-let phase = 'menu', game = null, tLeft = 0, calib = 0, countT = 0, lastCount = 0, lastT = performance.now();
-let wakeLock = null;
+// ---------- 7) KNEE SPRINT: Knie hoch auf der Stelle, Tempo = Punkte ----------
+GAMES.push({
+  id: 'sprint', name: 'Knee Sprint', icon: 'run', col: '#b6ff3b', dur: 60, met: 9, bpm: 144,
+  desc: 'Knie hoch auf der Stelle: je schneller, desto weiter.',
+  stars: [18, 32, 46], needs: 'legs', limbs: ['lk', 'rk'],
+  init(){ this.steps = []; this.n = 0; this.up = [false, false]; this.distM = 0; this.speed = 0; this.scroll = 0; this.next = 5; this.turbo = false;
+    setTitle('0 m'); badge('run', 'SPRINT', '#b6ff3b'); },
+  update(dt){
+    const now = performance.now() / 1000;
+    if (body?.legs){
+      [Pose.kneeUp(body.lk, body.lh), Pose.kneeUp(body.rk, body.rh)].forEach((u, side) => {
+        if (u && !this.up[side]){
+          this.steps.push(now); this.n++; Audio.step(side);
+          const k = side ? body.rk : body.lk; burst(k.x, k.y, side ? C.pink : C.teal, 6, 220);
+        }
+        this.up[side] = u;
+      });
+    }
+    this.steps = this.steps.filter(t => now - t < 1.5);
+    const cadence = this.steps.length / 1.5;                  // Schritte pro Sekunde
+    this.speed += (cadence * 1.5 - this.speed) * Math.min(1, dt * 3);
+    this.distM += this.speed * dt; this.scroll += this.speed * dt;
+    while (this.distM >= this.next){ good(W / 2, H * 0.3); this.next += 5; }   // alle 5 m ein Energiepunkt
+    if (cadence < 0.6 && S.combo) S.combo = 0;
+    const turbo = cadence >= 3.2;
+    if (turbo && !this.turbo){ bigWord('TURBO!'); Audio.bonus(); }
+    this.turbo = turbo; Music.intensity = cadence > 2 ? 1 : 0;
+    setTitle(`${Math.floor(this.distM)} m`, true);
+  },
+  draw(){
+    const hy = H * 0.64, vx = W / 2;
+    const g = ctx.createLinearGradient(0, hy, 0, H);
+    g.addColorStop(0, 'rgba(182,255,59,0)'); g.addColorStop(1, 'rgba(182,255,59,.2)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(vx - 20, hy); ctx.lineTo(vx + 20, hy); ctx.lineTo(W * 1.1, H); ctx.lineTo(-W * 0.1, H); ctx.fill();
+    for (let i = 0; i < 12; i++){
+      const z = ((i - (this.scroll * 0.6) % 1 + 12) % 12) / 12, y = hy + (H - hy) * z * z, half = 20 + (W * 0.6 - 20) * z * z;
+      ctx.strokeStyle = `rgba(182,255,59,${0.12 + z * 0.5})`; ctx.lineWidth = 1 + z * 4;
+      ctx.beginPath(); ctx.moveTo(vx - half, y); ctx.lineTo(vx + half, y); ctx.stroke();
+    }
+    const kmh = this.speed * 3.6, p = clamp(kmh / 24, 0, 1), bw = Math.min(W - 150, 340), bx = (W - bw) / 2, by = H - 104;
+    ctx.fillStyle = 'rgba(255,255,255,.15)'; roundRect(bx, by, bw, 16, 8); ctx.fill();
+    const bg = ctx.createLinearGradient(bx, 0, bx + bw, 0); bg.addColorStop(0, C.blue); bg.addColorStop(0.6, '#b6ff3b'); bg.addColorStop(1, C.red);
+    ctx.fillStyle = bg; roundRect(bx, by, Math.max(16, bw * p), 16, 8); ctx.fill();
+    label(`${kmh.toFixed(1)} km/h`, W / 2, by - 20, 22, this.turbo ? '#b6ff3b' : '#fff');
+    if (body && !body.legs) label('Knie nicht sichtbar, geh weiter zurück', W / 2, H * 0.34, 17, C.pink);
+  },
+  stats(){ return [['Distanz', Math.floor(this.distM) + ' m'], ['Schritte', this.n], ['Max Combo', '×' + S.maxCombo]]; }
+});
 
-function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
-function overlay(html){ const o = $('#overlay'); o.innerHTML = html; show(html ? 'overlay' : null); }
+// ---------- 8) SQUAT POWER: tief in die Hocke bis zur Linie, explosiv hoch ----------
+GAMES.push({
+  id: 'squat', name: 'Squat Power', icon: 'squat', col: C.violet, dur: 45, met: 6, bpm: 118,
+  desc: 'Hüfte runter bis zur Linie, dann hoch. Mit Sprung gibt es Bonus.',
+  stars: [14, 24, 34], needs: 'legs', limbs: ['lh', 'rh'],
+  init(){ this.down = false; this.reps = 0; this.el = 0; this.last = 0; this.jumped = false; this.pulse = 0; setTitle('Squats 0'); badge('down', 'SQUAT', C.violet); },
+  lineY(){ return base ? base.hipY + base.T * 0.3 : H * 0.6; },
+  update(dt){
+    this.el += dt; this.pulse = Math.max(0, this.pulse - dt * 3);
+    if (!body?.core || !base) return;
+    const y = body.hp.y;
+    if (!this.down && y > this.lineY()){ this.down = true; this.jumped = false; Audio.tick(); this.pulse = 1; }
+    else if (this.down && y < base.hipY + base.T * 0.1){
+      this.down = false; this.reps++;
+      if (this.el - this.last > 4) S.combo = 0;
+      this.last = this.el;
+      good(body.hp.x, body.hp.y, 2); Audio.rep(this.reps);
+      hitFx(body.sh.x, body.sh.y - body.T * 0.9, pick(['HOCH!', 'STARK!', 'YES!']));
+      setTitle(`Squats ${this.reps}`);
+    }
+    if (!this.down && !this.jumped && this.el - this.last < 0.6 && y < base.hipY - base.T * 0.1){   // Sprung direkt nach dem Squat
+      this.jumped = true; good(body.sh.x, body.sh.y - body.T, 1); bigWord('JUMP BONUS!'); Audio.bonus();
+    }
+  },
+  draw(){
+    if (!base) return;
+    const y = this.lineY(), col = this.down ? C.teal : C.violet;
+    ctx.save(); ctx.setLineDash([12, 9]); ctx.lineWidth = 4 + this.pulse * 4; ctx.strokeStyle = col;
+    ctx.beginPath(); ctx.moveTo(W * 0.08, y); ctx.lineTo(W * 0.92, y); ctx.stroke(); ctx.restore();
+    bolt(W * 0.08, y - 22, 34, col); bolt(W * 0.92, y - 22, 34, col);
+    if (body?.core){
+      const r = clamp(body.T * 0.16, 16, 34);
+      glowDisc(body.hp.x, body.hp.y, r, C.yellow);
+      ctx.fillStyle = C.yellow; ctx.beginPath(); ctx.arc(body.hp.x, body.hp.y, r, 0, Math.PI * 2); ctx.fill();
+      dashed(body.hp.x, body.hp.y, body.hp.x, y, C.yellow);
+    }
+    label(this.down ? 'Und hoch!' : 'Hüfte bis zur Linie', W / 2, H - 72, 24, col);
+  },
+  stats(){ return [['Squats', this.reps], ['Max Combo', '×' + S.maxCombo]]; }
+});
+
+// ================================================================
+//  ABLAUF: Start → Kurs wählen → Kalibrieren → Tracks (mit Pausen) → Auswertung
+// ================================================================
+const GAME = Object.fromEntries(GAMES.map(g => [g.id, g]));
+const QUICK_ORDER = ['punch', 'kick', 'smash', 'wall', 'jacks', 'sprint', 'squat', 'pose'];
+const SHORT = new URLSearchParams(location.search).has('short') ? 0.15 : 1;   // Testmodus (?short): stark verkürzte Tracks
+const TABS = ['home', 'history', 'me'];
+const icon = (n, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24"><use href="#i-${n}"/></svg>`;
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.round(s) % 60).padStart(2, '0')}`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const flames = n => `<span class="flames">${[1, 2, 3].map(i => icon('flame', i > n ? 'off' : '')).join('')}</span>`;
+const zoneChips = z => `<span class="zc">${ZONES.map(Z => `<u style="${Z.n >= z[0] && Z.n <= z[1] ? 'background:' + Z.col : ''}"></u>`).join('')}</span>`;
+const zoneText = z => z[0] === z[1] ? `Zone ${z[0]}` : `Zone ${z[0]}–${z[1]}`;
+
+let phase = 'home', game = null, run = null, tLeft = 0, restT = 0, calib = 0, countT = 0, lastCount = 0, lastT = performance.now();
+let wakeLock = null, lastSay = 0;
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id));
+  $('#tabs').classList.toggle('on', TABS.includes(id));
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === id));
+}
+function overlay(html){ const o = $('#overlay'); o.innerHTML = html; if (html) o.classList.add('on'); else o.classList.remove('on'); }
 function playUI(on){
   $('#hud').classList.toggle('on', on); $('#brand').style.display = on ? 'flex' : 'none';
   if (!on) setTitle('');
 }
+function inGameButtons(on){ $('#quit').style.display = $('#mute').style.display = on ? 'block' : 'none'; }
 
-function buildMenu(){
-  $('#cards').innerHTML = GAMES.map((g, i) => {
-    const best = store.get('best.' + g.id, 0);
-    return `<button class="card" data-i="${i}">
-      <div class="ic" style="background:${g.col};--glow:${g.col}66"><svg viewBox="0 0 24 24" style="color:#fff"><use href="#i-${g.icon}"/></svg></div>
-      <div><h3>${g.name}</h3><p>${g.desc}</p>${best ? `<div class="best">⚡ Rekord: ${best}</div>` : ''}</div>
-      <span class="meta">${Math.floor(g.dur / 60)}${g.dur % 60 ? ':' + String(g.dur % 60).padStart(2, '0') : ''} min</span>
-    </button>`;
-  }).join('');
+// Coach-Stimme (Sprachausgabe des Geräts)
+function say(text, force){
+  if (!profile.coach || Audio.muted || !('speechSynthesis' in window)) return;
+  const now = performance.now(); if (!force && now - lastSay < 7000) return; lastSay = now;
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = 1.05; u.pitch = 1.05; speechSynthesis.speak(u); } catch {}
 }
-$('#cards').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) startGame(GAMES[+c.dataset.i]); });
 
-async function startGame(g){
+// ---------- Start-Tab ----------
+function pulseSourceText(){
+  const s = Pulse.source;
+  if (s === 'watch') return '<span class="dot live"></span>Apple Watch · live';
+  if (s === 'ble') return `<span class="dot live"></span>${esc(Pulse.bleName || 'Brustgurt')} · live`;
+  if (s === 'health') return '<span class="dot live"></span>Apple Health';
+  if (s === 'estimate') return '<span class="dot"></span>Geschätzt aus deiner Bewegung';
+  if (Pulse.bleName) return `<span class="dot live"></span>${esc(Pulse.bleName)} verbunden`;
+  if (Pulse.watch.installed) return '<span class="dot live"></span>Apple Watch bereit · startet mit dem Kurs';
+  return '<span class="dot"></span>Kein Sensor · Puls wird im Spiel geschätzt';
+}
+function updatePulseCard(){
+  $('#pcBpm').textContent = Pulse.bpm || '--';
+  $('#pcSrc').innerHTML = pulseSourceText();
+  $('#pulseCard').style.setProperty('--beat', (60 / (Pulse.bpm || 60)).toFixed(2) + 's');
+}
+function renderHome(){
+  const L = Progress.level, w = Progress.week;
+  $('#lvlNum').textContent = L.level; $('#lvlRing').style.strokeDashoffset = 170 * (1 - L.pct);
+  $('#hello').textContent = profile.name ? `Hi ${profile.name}!` : 'FITTGAME';
+  $('#rank').textContent = `Level ${L.level} · ${L.rank} · ${Progress.data.xp} XP`;
+  $('#streak').textContent = Progress.streak;
+  $('#wPts').textContent = w.points; $('#wKcal').textContent = w.kcal; $('#wMin').textContent = w.mins;
+  $('#courses').innerHTML = COURSES.map(c => `<button class="course" data-c="${c.id}" style="background:linear-gradient(135deg,${c.grad[0]},${c.grad[1]})">
+      ${icon(c.icon, 'art')}<span class="tagl">${c.focus}</span><h3>${c.name}</h3><p>${c.tag}</p>
+      <div class="meta"><span>${icon('clock', 'i')}${courseMins(c)} min</span>${flames(c.intensity)}<span>${c.tracks.length} Tracks</span>${Progress.best(c.id) ? `<span>${icon('zap', 'i')}${Progress.best(c.id)}</span>` : ''}</div>
+    </button>`).join('');
+  $('#games').innerHTML = QUICK_ORDER.map(id => { const g = GAME[id], best = Progress.best('g-' + id);
+    return `<button class="game" data-g="${id}"><div class="ic" style="background:${g.col};--glow:${g.col}55">${icon(g.icon)}</div>
+      <div><b>${g.name}</b><span>${mmss(g.dur)} min${best ? ' · ⚡ ' + best : ''}</span></div></button>`; }).join('');
+  updatePulseCard();
+}
+$('#courses').addEventListener('click', e => { const c = e.target.closest('.course'); if (c){ Audio.init(); Audio.ui(); openCourse(COURSES.find(x => x.id === c.dataset.c)); } });
+$('#games').addEventListener('click', e => { const b = e.target.closest('.game'); if (b) startRun(quickDef(GAME[b.dataset.g])); });
+$('#pulseCard').onclick = () => { Audio.init(); Audio.ui(); openTab('me'); $('#pulseSetup').scrollIntoView({ block: 'center' }); };
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b){ Audio.init(); Audio.ui(); openTab(b.dataset.tab); } });
+function openTab(id){
+  if (id === 'home') renderHome(); if (id === 'history') renderHistory(); if (id === 'me') renderMe();
+  show(id);
+}
+const quickDef = g => ({ id: 'g-' + g.id, name: g.name, quick: true, rest: 0, icon: g.icon, grad: [g.col, g.col],
+  tracks: [{ game: g.id, dur: g.dur, zone: [3, 4], name: g.name, cue: g.desc }] });
+
+// ---------- Kurs-Details ----------
+function openCourse(c){
+  const kcal = Math.round(c.tracks.reduce((s, t) => { const [lo] = zoneRange(t.zone[0]), [, hi] = zoneRange(t.zone[1]); return s + kcalPerMin((lo + hi) / 2) * t.dur / 60; }, 0));
+  $('#sheet').innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,${c.grad[0]},${c.grad[1]})">
+      <button class="x" id="sheetX">✕</button>${icon(c.icon, 'art')}
+      <h2>${c.name}</h2><p>${c.desc}</p>
+      <div class="meta"><span>${icon('clock', 'i')}${courseMins(c)} min</span>${flames(c.intensity)}<span>${icon('flame', 'i')}ca. ${kcal} kcal</span></div>
+    </div>
+    <div class="tracks">
+      ${c.tracks.map((t, i) => { const g = GAME[t.game]; return `<div class="trk"><i>${i + 1}</i><div class="ic" style="background:${g.col}">${icon(g.icon)}</div>
+        <div><b>${t.name}</b><span>${g.name}</span></div><div class="r">${mmss(t.dur)}<br>${zoneChips(t.zone)}</div></div>`; }).join('')}
+      <p class="note">Die farbigen Balken zeigen die Ziel-Pulszone pro Track. Bist du in der Zone, zählt jeder Treffer doppelt.
+        Zwischen den Tracks gibt es ${c.rest} Sekunden Pause.</p>
+    </div>
+    <div class="cta"><button class="btn wide" id="sheetGo">Kurs starten</button></div>`;
+  $('#sheetX').onclick = () => { Audio.ui(); show('home'); };
+  $('#sheetGo').onclick = () => startRun(c);
+  show('sheet'); $('#sheet').scrollTop = 0;
+}
+
+// ---------- Verlauf ----------
+function renderHistory(){
+  const h = Progress.history;
+  $('#histList').innerHTML = h.length ? h.map((e, i) => `<button class="hist" data-i="${i}">
+      <div class="ic" style="background:${e.col || '#444'}">${icon(e.icon || 'zap')}</div>
+      <div><b>${esc(e.name)}</b><span>${new Date(e.date).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' })} · ${mmss(e.secs)} min${e.partial ? ' · abgebrochen' : ''}</span></div>
+      <div class="r"><em>⚡ ${e.energy}</em><br>♥ ${e.pulse?.avg || '--'} · ${e.pulse?.kcal || 0} kcal</div></button>`).join('')
+    : `<div class="empty">Noch keine Einheit.<br>Starte einen Kurs, dann siehst du hier Puls, Kalorien und Punkte.</div>`;
+}
+$('#histList').addEventListener('click', e => { const b = e.target.closest('.hist'); if (b){ Audio.ui(); renderResults(Progress.history[+b.dataset.i], null); show('results'); } });
+
+// ---------- Profil ----------
+const FIELDS = [['name', 'Name', 'text', 'Dein Name', 'full'], ['age', 'Alter', 'number', '30', ''], ['weight', 'Gewicht (kg)', 'number', '75', ''],
+  ['rest', 'Ruhepuls', 'number', '65', ''], ['maxHr', 'Max-Puls (optional)', 'number', 'auto', '']];
+function formHtml(keys){
+  return FIELDS.filter(f => keys.includes(f[0])).map(([k, lab, type, ph, cls]) =>
+    `<div class="f ${cls}"><label>${lab}</label><input data-k="${k}" type="${type}" inputmode="${type === 'number' ? 'numeric' : 'text'}" placeholder="${ph}" value="${esc(profile[k] || '')}"></div>`).join('')
+    + `<div class="f full"><label>Geschlecht (für die Kalorienformel)</label><div class="seg"><button data-sex="m" class="${profile.sex === 'm' ? 'on' : ''}">Männlich</button><button data-sex="f" class="${profile.sex === 'f' ? 'on' : ''}">Weiblich</button></div></div>`;
+}
+function bindForm(el){
+  el.oninput = e => { const k = e.target.dataset.k; if (!k) return;
+    const v = e.target.type === 'number' ? clamp(parseInt(e.target.value) || 0, 0, 250) : e.target.value.slice(0, 20);
+    if (e.target.type === 'number' && k !== 'maxHr' && !v) return;
+    saveProfile({ [k]: v }); renderZones(); };
+  el.onclick = e => { const b = e.target.closest('[data-sex]'); if (!b) return; saveProfile({ sex: b.dataset.sex });
+    el.querySelectorAll('[data-sex]').forEach(x => x.classList.toggle('on', x === b)); };
+}
+function renderZones(){
+  $('#maxInfo').textContent = `Max-Puls ${maxHr()} bpm`;
+  $('#zoneTable').innerHTML = ZONES.slice().reverse().map(Z => { const [lo, hi] = zoneRange(Z.n);
+    return `<i style="background:${Z.col}">Z${Z.n}</i><div>${Z.name}</div><span>${lo}–${hi} bpm</span>`; }).join('');
+}
+function renderPulseSetup(){
+  const w = Pulse.watch;
+  const watch = !Pulse.hasNative ? 'Nur in der iPhone-App verfügbar.'
+    : w.installed ? 'Bereit. Die Watch-App startet automatisch mit jedem Kurs und misst deinen Puls live.'
+    : w.paired ? 'Installiere FITTGAME auf der Watch (Watch-App auf dem iPhone → Verfügbare Apps).' : 'Keine Apple Watch gekoppelt.';
+  $('#pulseSetup').innerHTML = `
+    <div class="rowc" style="margin-top:0"><div><b>Aktuell: ${Pulse.bpm || '--'} bpm</b><small>${pulseSourceText()}</small></div></div>
+    <div class="rowc"><div><b>Apple Watch</b><small>${watch}</small></div></div>
+    <div class="rowc"><div><b>Bluetooth-Brustgurt</b><small>${Pulse.bleName ? 'Verbunden: ' + esc(Pulse.bleName) : Pulse.canBLE ? 'Polar, Wahoo, Garmin & Co. (Bluetooth-Herzfrequenz)' : 'In diesem Browser nicht verfügbar. Geht in der iPhone-App und in Chrome.'}</small></div>
+      ${Pulse.canBLE && !Pulse.bleName ? '<button class="btn alt small" id="bleGo">Verbinden</button>' : ''}</div>
+    <div class="rowc"><div><b>Ohne Sensor</b><small>Der Puls wird aus deiner Bewegung geschätzt. Das reicht zum Spielen, ist aber kein Messwert.</small></div></div>`;
+  const b = $('#bleGo'); if (b) b.onclick = async () => { Audio.ui(); b.textContent = 'Suche…';
+    try { await Pulse.connectBLE(); } catch (err){ console.warn(err); } renderPulseSetup(); };
+}
+function renderMe(){
+  $('#meForm').innerHTML = formHtml(['name', 'age', 'weight', 'rest', 'maxHr']); bindForm($('#meForm'));
+  renderZones(); renderPulseSetup();
+  $('#swCoach').classList.toggle('on', profile.coach); $('#swSound').classList.toggle('on', !Audio.muted);
+}
+$('#swCoach').onclick = () => { saveProfile({ coach: !profile.coach }); $('#swCoach').classList.toggle('on', profile.coach); if (profile.coach){ Audio.init(); say('Coach ist an.', true); } };
+$('#swSound').onclick = () => { Audio.init(); Audio.setMuted(!Audio.muted); $('#swSound').classList.toggle('on', !Audio.muted); $('#mute').textContent = Audio.muted ? '🔇' : '🔊'; };
+$('#resetAll').onclick = () => { if (confirm('Level, Serie und Verlauf wirklich löschen?')){ Progress.reset(); renderMe(); } };
+$('#setupGo').onclick = () => { Audio.init(); Audio.ui(); saveProfile({ setup: true }); openTab('home'); };
+
+// ---------- Lauf starten ----------
+async function startRun(def){
   Audio.init(); Audio.ui();
-  game = g;
+  try { if (profile.coach) speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch {}   // Sprachausgabe per Tipp freischalten
   try {
     if (!camReady || !landmarker){
-      overlay(`<div class="spinner"></div><h2>Lädt…</h2><p>Kamera &amp; Body-Tracking werden gestartet.<br>Beim ersten Mal dauert das ein paar Sekunden.</p>`);
+      overlay(`<div><div class="spinner"></div><h2>Lädt…</h2><p>Kamera &amp; Body-Tracking werden gestartet.<br>Beim ersten Mal dauert das ein paar Sekunden.</p></div>`);
       await startCamera();
       await loadModel();
     }
   } catch (err){
     console.error(err);
     const https = NATIVE || location.protocol === 'https:' || location.hostname === 'localhost';
-    overlay(`<h2>Kamera geht nicht</h2><p>${!https
-      ? 'Die Kamera funktioniert im Browser nur über <b>https://</b>. Öffne die Seite über einen https-Link (z.B. GitHub Pages).'
-      : NATIVE ? 'Bitte erlaube den Kamera-Zugriff: Einstellungen → FITTGAME → Kamera.' : 'Bitte erlaube den Kamera-Zugriff (Safari: aA → Website-Einstellungen → Kamera → Erlauben) und lade die Seite neu.'}</p>
-      <button class="btn" onclick="location.reload()">Neu laden</button>`);
+    overlay(`<div><h2>Kamera geht nicht</h2><p>${!https
+      ? 'Die Kamera funktioniert im Browser nur über <b>https://</b>. Öffne die Seite über einen https-Link.'
+      : NATIVE ? 'Bitte erlaube den Kamera-Zugriff: Einstellungen → FITTGAME → Kamera.' : 'Bitte erlaube den Kamera-Zugriff (Safari: aA → Website-Einstellungen → Kamera → Erlauben) und versuch es erneut.'}</p>
+      <button class="btn" id="ovBack">Zurück</button></div>`);
+    $('#ovBack').onclick = () => { overlay(''); openTab('home'); };
     return;
   }
+  overlay('');
   try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
-  base = null; calib = 0;
-  phase = 'calib';
-  overlay(''); show(null);
-  $('#quit').style.display = 'block';
+  run = {
+    def, idx: 0, session: new PulseSession(), energy: [], stateT: 0, said10: false,
+    tracks: def.tracks.map(t => ({ ...t, dur: Math.max(6, Math.round(t.dur * SHORT)) })),
+    rest: def.rest ? Math.max(4, Math.round(def.rest * SHORT)) : 0,
+    needsLegs: def.tracks.some(t => GAME[t.game].needs === 'legs'),
+    coach: { below: 0, above: 0, max: 0, inZone: false }
+  };
+  Object.assign(S, { score: 0, combo: 0, maxCombo: 0, hits: 0, misses: 0, mult: 1 });
+  game = GAME[run.tracks[0].game];
+  base = null; calib = 0; phase = 'calib';
+  show(null); inGameButtons(true);
+  Pulse.start(def.name);
 }
 
-function beginCountdown(){ phase = 'count'; countT = 3.99; lastCount = 4; setTitle(game.name); }
+function renderTrackbar(){
+  const tb = $('#trackbar');
+  tb.classList.toggle('on', run.tracks.length > 1);
+  tb.innerHTML = run.tracks.map(t => `<u style="flex:${t.dur}"><s></s></u>`).join('');
+}
+function setZoneTarget(z){ $('#hZbar').querySelectorAll('u').forEach((u, i) => u.classList.toggle('t', !!z && i + 1 >= z[0] && i + 1 <= z[1])); }
 
-function beginPlay(){
-  phase = 'play'; tLeft = game.dur;
-  Object.assign(S, { score: 0, combo: 0, maxCombo: 0, hits: 0, misses: 0 });
+function beginTrack(i){
+  run.idx = i; const t = run.tracks[i];
+  game = GAME[t.game]; game.runDur = t.dur;
+  phase = 'play'; tLeft = t.dur; run.trackStart = S.score; run.said10 = false; S.combo = 0;
+  Object.assign(run.coach, { below: 0, above: 0, max: 0, inZone: false });
   particles.length = 0; words.length = 0; rings.length = 0;
-  playUI(true);
+  show(null); playUI(true); if (i === 0) renderTrackbar(); setZoneTarget(t.zone);
   game.init();
-  Music.intensity = 0; Music.start(game.bpm);
-  Audio.go(); callout('LOS!');
+  run.session.mark(t.name);
+  Music.intensity = 0; Music.restart(game.bpm);
+  Audio.go(); callout('LOS!'); Pulse.haptic('heavy');
+  say(run.tracks.length > 1 ? `${t.name}. ${t.cue}` : t.cue, true);
+}
+
+function endTrack(){
+  run.energy.push(S.score - run.trackStart);
+  run.stats = game.stats();
+  if (run.idx + 1 < run.tracks.length) beginRest(); else endRun(false);
+}
+
+function beginRest(){
+  const n = run.tracks[run.idx + 1], g = GAME[n.game];
+  phase = 'rest'; restT = run.rest; S.mult = 1;
+  playUI(false); Music.intensity = 0;
+  $('#restTitle').textContent = `Track ${run.idx + 1} von ${run.tracks.length} geschafft`;
+  $('#restNext').innerHTML = `<div class="ic" style="background:${g.col}">${icon(g.icon)}</div><div><b>${n.name}</b><span>${g.name} · ${mmss(n.dur)} · ${zoneText(n.zone)}</span></div>`;
+  show('rest'); Audio.round(); Pulse.haptic('medium');
+  say(`Pause. Gleich: ${n.name}.`, true);
+}
+
+function starsFor(){
+  const done = run.tracks.slice(0, run.energy.length);
+  return [0, 1, 2].filter(i => S.score >= Math.max(1, done.reduce((s, t) => s + GAME[t.game].stars[i] * t.dur / GAME[t.game].dur, 0))).length;
 }
 
 const RATING = ['Guter Start!', 'Stark gemacht!', 'Mega Power!', 'LEGENDÄR!'];
-function endGame(){
-  phase = 'results'; Music.stop(); Audio.finish();
-  playUI(false); $('#quit').style.display = 'none';
-  const key = 'best.' + game.id, prev = store.get(key, 0), isBest = S.score > prev;
-  if (isBest) store.set(key, S.score);
-  const stars = game.stars.filter(s => S.score >= s).length;
-  const kcal = Math.round(game.met * 70 * (game.dur / 3600));
-  $('#rTitle').textContent = RATING[stars];
-  $('#rStars').innerHTML = [0, 1, 2].map(i => `<span class="${i < stars ? '' : 'off'}">⭐</span>`).join('');
-  $('#rScore').textContent = S.score;
-  $('#rBest').textContent = isBest && prev ? 'NEUER REKORD!' : isBest ? 'ERSTER REKORD!' : `Rekord: ${prev}`;
-  $('#rStats').innerHTML = [...game.stats(), ['≈ kcal', kcal]].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k.toUpperCase()}</span></div>`).join('');
-  show('results');
+function endRun(partial){
+  if (phase === 'play' && partial) run.energy.push(S.score - run.trackStart);
+  phase = 'results'; Music.stop(); Audio.finish(); S.mult = 1;
+  playUI(false); inGameButtons(false); $('#trackbar').classList.remove('on');
+  const pulse = run.session.summary(), d = run.def;
+  const entry = { id: d.id, name: d.name, quick: !!d.quick, icon: d.icon, col: d.grad[0], secs: pulse.secs, energy: S.score, maxCombo: S.maxCombo,
+    stars: partial ? 0 : starsFor(), partial: !!partial, pulse,
+    tracks: run.tracks.slice(0, run.energy.length).map((t, i) => ({ name: t.name, game: t.game, energy: run.energy[i] })) };
+  const res = Progress.add(entry);
+  Pulse.stop({ name: d.name, energy: entry.energy, kcal: pulse.kcal });
+  renderResults(entry, res, run.def);
+  show('results'); $('#results').scrollTop = 0;
+  say(partial ? 'Einheit gespeichert.' : `${d.quick ? 'Runde' : 'Kurs'} geschafft! ${entry.energy} Energie und ${pulse.kcal} Kalorien.`, true);
+  run = null;
   try { wakeLock?.release(); } catch {} wakeLock = null;
 }
 
-function toMenu(){
-  phase = 'menu'; Music.stop(); game = null;
-  playUI(false); $('#quit').style.display = 'none';
-  buildMenu(); show('menu');
+function toHome(){
+  phase = 'home'; Music.stop(); run = null; game = null; S.mult = 1;
+  try { speechSynthesis.cancel(); } catch {}
+  playUI(false); inGameButtons(false); $('#trackbar').classList.remove('on'); overlay('');
+  Pulse.idle(); openTab('home');
   try { wakeLock?.release(); } catch {} wakeLock = null;
 }
-$('#quit').onclick = () => { Audio.ui(); toMenu(); };
-$('#again').onclick = () => { Audio.init(); startGame(game); };
-$('#toMenu').onclick = () => { Audio.ui(); toMenu(); };
-$('#mute').onclick = () => { Audio.init(); Audio.setMuted(!Audio.muted); $('#mute').textContent = Audio.muted ? '🔇' : '🔊'; };
+function quitRun(){
+  if (!run) return toHome();
+  if ((phase === 'play' || phase === 'rest') && run.session.n >= 45 * SHORT) endRun(true);
+  else { Pulse.stop({ discard: true }); toHome(); }
+}
+$('#quit').onclick = () => { Audio.ui(); quitRun(); };
+$('#mute').onclick = () => { Audio.init(); Audio.setMuted(!Audio.muted); $('#mute').textContent = Audio.muted ? '🔇' : '🔊'; if (Audio.muted) try { speechSynthesis.cancel(); } catch {} };
 $('#mute').textContent = Audio.muted ? '🔇' : '🔊';
-document.addEventListener('visibilitychange', () => { if (document.hidden && phase !== 'menu' && phase !== 'results') toMenu(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && run) quitRun(); });
+
+// ---------- Auswertung ----------
+function renderResults(e, res, againDef){
+  const p = e.pulse || { samples: [], zoneSecs: [0, 0, 0, 0, 0, 0], avg: 0, max: 0, kcal: 0, points: 0, inTarget: 0, secs: 0 };
+  const total = Math.max(1, p.zoneSecs.reduce((a, b) => a + b, 0));
+  $('#resBody').innerHTML = `
+    <div class="rhead"><small>${e.quick ? 'Quick Game' : 'Kurs'}${e.partial ? ' · abgebrochen' : ''} · ${mmss(e.secs)} min</small>
+      <h2>${esc(e.name)}</h2>
+      ${e.partial ? '' : `<div class="stars">${[0, 1, 2].map(i => `<span class="${i < e.stars ? '' : 'off'}">⭐</span>`).join('')}</div>`}</div>
+    <div class="big3">
+      <div class="tile">${icon('bolt')}<b>${e.energy}</b><span>Energie</span></div>
+      <div class="tile"><span style="color:var(--red)">${icon('heart')}</span><b>${p.points}</b><span>Pulspunkte</span></div>
+      <div class="tile"><span style="color:var(--orange)">${icon('flame')}</span><b>${p.kcal}</b><span>kcal</span></div>
+    </div>
+    ${res ? `<div class="xp"><div class="l"><span>Level ${res.after.level} · ${res.after.rank}</span><em>+${res.xp} XP</em></div><div class="bar"><s id="xpBar" style="width:${res.levelUp ? 0 : res.before.pct * 100}%"></s></div>
+      ${res.levelUp ? `<div class="lvup">LEVEL UP! Du bist jetzt Level ${res.after.level}</div>` : ''}
+      ${res.isBest && res.prevBest ? `<div class="lvup" style="background:var(--teal)">Neuer Rekord! Vorher ${res.prevBest}</div>` : ''}</div>` : ''}
+    <div class="panel"><h4>Puls${p.estimated ? ' (geschätzt)' : ''} <em>Ø ${p.avg || '--'} · max ${p.max || '--'} bpm</em></h4><canvas id="rChart"></canvas></div>
+    <div class="panel"><h4>Zeit in den Zonen <em>${Math.round(p.inTarget * 100)} % in der Zielzone</em></h4>
+      ${ZONES.slice().reverse().map(Z => `<div class="zrow"><div style="color:${Z.col}">Z${Z.n} ${Z.name}</div><div class="bar"><s style="--c:${Z.col};width:${p.zoneSecs[Z.n] / total * 100}%"></s></div><span>${mmss(p.zoneSecs[Z.n])}</span></div>`).join('')}</div>
+    ${e.tracks.length > 1 ? `<div class="panel"><h4>Tracks <em>Max Combo ×${e.maxCombo}</em></h4>${e.tracks.map((t, i) => `<div class="tl"><span>${i + 1}. ${esc(t.name)} · ${GAME[t.game]?.name || ''}</span><b>⚡ ${t.energy}</b></div>`).join('')}</div>`
+      : res && run?.stats ? `<div class="panel"><h4>Details</h4>${run.stats.map(([k, v]) => `<div class="tl"><span>${k}</span><b>${v}</b></div>`).join('')}</div>` : ''}
+    ${p.estimated ? `<p class="note">Der Puls wurde aus deiner Bewegung geschätzt. Für echte Werte verbinde im Profil eine Apple Watch oder einen Bluetooth-Brustgurt.</p>` : ''}
+    <div class="row">${res ? `<button class="btn" id="resAgain">Nochmal</button><button class="btn alt" id="resDone">Fertig</button>` : `<button class="btn alt" id="resBack">Zurück</button>`}</div>`;
+  if (res){
+    setTimeout(() => { const b = $('#xpBar'); if (b) b.style.width = res.after.pct * 100 + '%'; }, 250);
+    if (res.levelUp) setTimeout(() => Audio.bonus(), 700);
+    $('#resAgain').onclick = () => startRun(againDef);
+    $('#resDone').onclick = () => { Audio.ui(); toHome(); };
+  } else $('#resBack').onclick = () => { Audio.ui(); openTab('history'); };
+  requestAnimationFrame(() => drawPulseChart($('#rChart'), p));
+}
+function drawPulseChart(cv, p){
+  const w = cv.clientWidth, h = cv.clientHeight, d = Math.min(devicePixelRatio || 1, 2);
+  cv.width = w * d; cv.height = h * d; const c = cv.getContext('2d'); c.scale(d, d);
+  const s = p.samples;
+  if (s.length < 2){ c.fillStyle = '#9c9ca8'; c.font = `700 14px ${FONT}`; c.textAlign = 'center'; c.fillText('Keine Pulsdaten', w / 2, h / 2); return; }
+  const lo = Math.min(...s) - 8, hi = Math.max(...s) + 8, X = i => i / (s.length - 1) * w, Y = v => h - 4 - (v - lo) / (hi - lo) * (h - 8);
+  for (const Z of ZONES){ const [a, b] = zoneRange(Z.n); const y1 = clamp(Y(b), 0, h), y2 = clamp(Y(a), 0, h);
+    if (y2 > y1){ c.fillStyle = Z.col + '1c'; c.fillRect(0, y1, w, y2 - y1); } }
+  c.setLineDash([3, 4]); c.strokeStyle = 'rgba(255,255,255,.25)'; c.lineWidth = 1;
+  for (const m of (p.marks || []).slice(1)){ c.beginPath(); c.moveTo(X(m.i), 0); c.lineTo(X(m.i), h); c.stroke(); }
+  c.setLineDash([]); c.lineWidth = 3; c.lineCap = 'round'; c.lineJoin = 'round';
+  for (let i = 1; i < s.length; i++){ c.strokeStyle = zoneCol(zoneOf(s[i])); c.beginPath(); c.moveTo(X(i - 1), Y(s[i - 1])); c.lineTo(X(i), Y(s[i])); c.stroke(); }
+}
 
 // --- Kalibrierung: Körper muss sichtbar sein und still stehen ---
 function updateCalib(dt){
-  const need = game.needs === 'legs' ? body?.core && body.legs : body?.core;
+  const need = run.needsLegs ? body?.core && body.legs : body?.core;
   const msg = !body ? 'Stell dich vor die Kamera'
     : !body.core ? 'Oberkörper & Hüfte ins Bild'
-    : game.needs === 'legs' && !body.legs ? 'Weiter zurück: Knie ins Bild'
+    : run.needsLegs && !body.legs ? 'Weiter zurück: Knie ins Bild'
     : 'Stillhalten…';
   calib = need ? calib + dt : Math.max(0, calib - dt * 2);
   setTitle(msg);
@@ -1263,22 +1788,59 @@ function updateCalib(dt){
       thigh: Math.max(body.T * 0.5, ((body.lk.y - body.lh.y) + (body.rk.y - body.rh.y)) / 2),
       ankleY: body.feet ? (body.la.y + body.ra.y) / 2 : Math.min(H, body.hp.y + body.T * 1.9)
     };
-    Audio.calibrated(); beginCountdown();
+    Audio.calibrated(); phase = 'count'; countT = 3.99; lastCount = 4; setTitle(run.def.name);
   }
+}
+// Ruhehaltung nachführen, falls man im Lauf eines Kurses näher kommt oder zur Seite wandert
+function adaptBase(dt, resting){
+  if (!base || !body?.core) return;
+  const standing = !body.legs || (body.lk.y - body.lh.y + body.rk.y - body.rh.y) / 2 > base.thigh * 0.75;
+  const upright = Math.abs(body.hp.y - base.hipY) < base.T * 0.12;
+  const k = resting && motion < 0.35 && standing ? Math.min(1, dt * 1.5) : upright && motion < 0.6 ? Math.min(1, dt * 0.4) : 0;
+  if (!k) return;
+  base.hipY += (body.hp.y - base.hipY) * k; base.noseY += (body.nose.y - base.noseY) * k;
+  base.T += (body.T - base.T) * k; base.SW += (body.SW - base.SW) * k;
+  if (resting) base.cx += (body.sh.x - base.cx) * k;
+  if (body.feet) base.ankleY += ((body.la.y + body.ra.y) / 2 - base.ankleY) * k;
+}
+
+// Coach reagiert auf die Pulszone
+function coach(dt, z, t){
+  const c = run.coach, [lo, hi] = t.zone;
+  if (z < lo){ c.above = 0; c.inZone = false; c.below += dt;
+    if (c.below > 14){ c.below = 0; say(pick(['Puls hoch, gib Gas!', 'Mehr Tempo, du schaffst das!', 'Größere Bewegungen, Puls nach oben!']));
+      words.push({ text: 'PULS HOCH!', x: W / 2, y: H * 0.16, life: 1.2, max: 1.2, rot: 0, size: 30, color: zoneCol(lo) }); } }
+  else if (z > hi){ c.below = 0; c.inZone = false; c.above += dt;
+    if (c.above > 14){ c.above = 0; say(hi <= 2 ? 'Ruhig atmen, Puls runterbringen.' : 'Etwas rausnehmen, kurz durchatmen.'); } }
+  else { c.below = c.above = 0;
+    if (!c.inZone){ c.inZone = true; Pulse.haptic('light'); Audio.round(); if (lo >= 3) say(pick(['Perfekt, du bist in der Zone!', 'Genau so, Zone getroffen!', 'Stark, Punkte zählen doppelt!'])); } }
+  if (Pulse.bpm > maxHr() * 0.97){ c.max += dt; if (c.max > 12){ c.max = 0; say('Dein Puls ist sehr hoch. Mach kurz langsamer.', true); } } else c.max = 0;
 }
 
 // ================================================================
 //  HAUPTSCHLEIFE
 // ================================================================
-let hudScore = -1, hudTime = -1, hudCombo = -1;
+let hudScore = -1, hudTime = -1, hudCombo = -1, hudBpm = -1, hudSrc = '';
+function updatePulseHud(z, inZone){
+  if (Pulse.bpm !== hudBpm || Pulse.source !== hudSrc){
+    hudBpm = Pulse.bpm; hudSrc = Pulse.source;
+    const pill = $('#hPill'), col = zoneCol(z);
+    $('#hBpm').textContent = Pulse.bpm || '--';
+    $('#hZone').textContent = (Pulse.source === 'estimate' ? '≈ ' : '') + (z ? 'Z' + z : '');
+    pill.style.setProperty('--zc', col); pill.style.setProperty('--beat', (60 / (Pulse.bpm || 60)).toFixed(2) + 's');
+    $('#hZbar').querySelectorAll('u').forEach((u, i) => u.style.background = i + 1 <= z ? ZONES[i].col : '');
+  }
+  $('#zflag').classList.toggle('on', inZone);
+}
+
 function frame(now){
   const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+  if (phase === 'home' || phase === 'results'){ requestAnimationFrame(frame); return; }
   detect();
-
-  if (phase === 'menu'){ requestAnimationFrame(frame); return; }
   ctx.save();
   if (shake > 0){ ctx.translate(rand(-1, 1) * shake * 22, rand(-1, 1) * shake * 22); shake = Math.max(0, shake - dt * 1.6); }
-  drawCamera(phase === 'results' ? 0.6 : 0.15);
+  drawCamera(phase === 'rest' ? 0.4 : 0.15);
+  if (phase !== 'calib') Pulse.feedMotion(clamp(motion / 1.8, 0, 1), dt);
 
   if (phase === 'calib'){ updateCalib(dt); }
   else if (phase === 'count'){
@@ -1286,28 +1848,56 @@ function frame(now){
     countT -= dt;
     const n = Math.ceil(countT);
     if (n !== lastCount && n > 0 && n <= 3){ lastCount = n; callout(String(n)); Audio.count(); }
-    if (countT <= 0) beginPlay();
+    if (countT <= 0) beginTrack(0);
+  }
+  else if (phase === 'rest'){
+    drawJoints(); adaptBase(dt, true);
+    run.session.tick(dt, Pulse.bpm, Pulse.source, null);
+    restT -= dt;
+    const n = Math.ceil(restT);
+    if (n !== lastCount){ lastCount = n; $('#restCnt').textContent = Math.max(0, n); if (n > 0 && n <= 3) Audio.count();
+      $('#restBpm').textContent = (Pulse.bpm || '--') + ' bpm' + (Pulse.source === 'estimate' ? ' (geschätzt)' : ''); }
+    if (restT <= 0) beginTrack(run.idx + 1);
   }
   else if (phase === 'play'){
+    const t = run.tracks[run.idx];
+    const z = Math.max(1, zoneOf(Pulse.bpm)), inZone = Pulse.bpm > 0 && z >= t.zone[0] && z <= t.zone[1];
+    S.mult = inZone ? 2 : 1;
     tLeft -= dt;
+    run.session.tick(dt, Pulse.bpm, Pulse.source, t.zone);
+    adaptBase(dt, false);
     game.update(dt);
     drawJoints('rgba(255,255,255,.85)', game.limbs.map(l => LIMB[l].idx[0]));
     game.draw();
     for (const l of game.limbs) drawLimb(l);
+    if (Pulse.bpm) coach(dt, z, t);
     if (performance.now() - lastSeen > 1500) label('Ich sehe dich nicht', W / 2, H * 0.55, 26, C.yellow);
     if (tLeft <= 5 && Math.ceil(tLeft) !== Math.ceil(tLeft + dt)) Audio.count();
-    if (tLeft <= 0){ ctx.restore(); endGame(); requestAnimationFrame(frame); return; }
+    if (!run.said10 && tLeft <= 10 && t.dur >= 40){ run.said10 = true; say('Noch zehn Sekunden!', true); }
+    // HUD + Watch
     if (S.score !== hudScore){ hudScore = S.score; $('#hScore').textContent = S.score; }
-    const tl = Math.ceil(tLeft);
+    const tl = Math.max(0, Math.ceil(tLeft));
     if (tl !== hudTime){ hudTime = tl; $('#hTime').textContent = tl + 's'; }
     if (S.combo !== hudCombo){ hudCombo = S.combo; $('#hCombo').textContent = '×' + S.combo; }
+    updatePulseHud(Pulse.bpm ? z : 0, inZone);
+    const bar = $('#trackbar').children;
+    for (let i = 0; i < bar.length; i++) bar[i].firstChild.style.width = (i < run.idx ? 100 : i === run.idx ? (1 - tLeft / t.dur) * 100 : 0) + '%';
+    run.stateT += dt;
+    if (run.stateT >= 1){ run.stateT = 0; Pulse.state({ track: t.name, idx: run.idx + 1, total: run.tracks.length, energy: S.score, left: tl,
+      lo: zoneRange(t.zone[0])[0], hi: zoneRange(t.zone[1])[1], inZone }); }
+    if (tLeft <= 0){ drawFx(dt); ctx.restore(); endTrack(); requestAnimationFrame(frame); return; }
   }
   drawFx(dt);
   ctx.restore();
   requestAnimationFrame(frame);
 }
 
-buildMenu();
+Pulse.onChange = () => { if ($('#me').classList.contains('on')) renderPulseSetup(); updatePulseCard(); };
+Pulse.init();
+setInterval(() => { if (phase === 'home'){ Pulse.idle(); if ($('#home').classList.contains('on')) updatePulseCard(); else if ($('#me').classList.contains('on')) renderPulseSetup(); } }, 1000);
+
+if (profile.setup) openTab('home');
+else { $('#setupForm').innerHTML = formHtml(['name', 'age', 'weight']); bindForm($('#setupForm')); show('setup'); }
 requestAnimationFrame(frame);
 </script>
 </body>

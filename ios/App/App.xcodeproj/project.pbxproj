@@ -7,18 +7,53 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05F5144173B13DEF3107E21A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81A26B1D4DD6CC06EDFD0FD /* ContentView.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
+		4DC413BC413EE42CB3DE06A7 /* FittPulsePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36106E446EA7E588A44DDDB2 /* FittPulsePlugin.swift */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		67531C7409CDFAE8E441080B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C16AC67B108670DBF3382CD /* Foundation.framework */; };
+		7BA4922E355851362DEE26D8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D278924395B747CF837D93 /* MainViewController.swift */; };
+		992EDF0466F2D6B093136A31 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535CA378FE45B2E04A8D4FAB /* WorkoutManager.swift */; };
+		9ED68D7A6729987246DAB2AA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A92AB61A30F30DC8D7995C09 /* Assets.xcassets */; };
+		CA6A64CE19161B111D570800 /* FittWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77B5C03D23B83E607855311 /* FittWatchApp.swift */; };
+		DF7E6D96C31E60CDC99134EA /* FittWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 449BFE1C0DA409AB45CF16BE /* FittWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		F2D40C063A5458B7B47D16D6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDAFB3242C8BFACF057684BA;
+			remoteInfo = FittWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		006FD8719D7D79F9567BA767 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				DF7E6D96C31E60CDC99134EA /* FittWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		0422B7233E434C29BD332331 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		36106E446EA7E588A44DDDB2 /* FittPulsePlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FittPulsePlugin.swift; sourceTree = "<group>"; };
+		449BFE1C0DA409AB45CF16BE /* FittWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FittWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -27,7 +62,15 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
+		535CA378FE45B2E04A8D4FAB /* WorkoutManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		9C16AC67B108670DBF3382CD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		A1CA907AE63037EDE06EB4BA /* App.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
+		A92AB61A30F30DC8D7995C09 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B81A26B1D4DD6CC06EDFD0FD /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C77B5C03D23B83E607855311 /* FittWatchApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FittWatchApp.swift; sourceTree = "<group>"; };
+		CC5DF2527DB5675786CC9FD8 /* FittWatch.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = FittWatch.entitlements; sourceTree = "<group>"; };
+		F7D278924395B747CF837D93 /* MainViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,15 +82,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B45BAC556FE98838DD9C9594 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				67531C7409CDFAE8E441080B /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0BBF1BC0450354CFABED8ABE /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				9C16AC67B108670DBF3382CD /* Foundation.framework */,
+			);
+			name = watchOS;
+			sourceTree = "<group>";
+		};
+		43FFB4471689D92C05A1E077 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0BBF1BC0450354CFABED8ABE /* watchOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
+				43FFB4471689D92C05A1E077 /* Frameworks */,
+				944837BF42D554FF68653EEF /* FittWatch */,
 			);
 			sourceTree = "<group>";
 		};
@@ -55,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				449BFE1C0DA409AB45CF16BE /* FittWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,8 +140,25 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				F7D278924395B747CF837D93 /* MainViewController.swift */,
+				36106E446EA7E588A44DDDB2 /* FittPulsePlugin.swift */,
+				A1CA907AE63037EDE06EB4BA /* App.entitlements */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		944837BF42D554FF68653EEF /* FittWatch */ = {
+			isa = PBXGroup;
+			children = (
+				C77B5C03D23B83E607855311 /* FittWatchApp.swift */,
+				535CA378FE45B2E04A8D4FAB /* WorkoutManager.swift */,
+				B81A26B1D4DD6CC06EDFD0FD /* ContentView.swift */,
+				A92AB61A30F30DC8D7995C09 /* Assets.xcassets */,
+				0422B7233E434C29BD332331 /* Info.plist */,
+				CC5DF2527DB5675786CC9FD8 /* FittWatch.entitlements */,
+			);
+			name = FittWatch;
+			path = FittWatch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -84,10 +171,12 @@
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
+				006FD8719D7D79F9567BA767 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				059634A499523ED51AA0F2A8 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -95,6 +184,23 @@
 			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CDAFB3242C8BFACF057684BA /* FittWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BBA0C26C1718B803320CCB13 /* Build configuration list for PBXNativeTarget "FittWatch" */;
+			buildPhases = (
+				34788DF1AC5EE76EAF8C55CB /* Sources */,
+				B45BAC556FE98838DD9C9594 /* Frameworks */,
+				7B26C9E373C2A77C2F336985 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FittWatch;
+			productName = FittWatch;
+			productReference = 449BFE1C0DA409AB45CF16BE /* FittWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -130,6 +236,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				CDAFB3242C8BFACF057684BA /* FittWatch */,
 			);
 		};
 /* End PBXProject section */
@@ -148,18 +255,47 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7B26C9E373C2A77C2F336985 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9ED68D7A6729987246DAB2AA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		34788DF1AC5EE76EAF8C55CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CA6A64CE19161B111D570800 /* FittWatchApp.swift in Sources */,
+				992EDF0466F2D6B093136A31 /* WorkoutManager.swift in Sources */,
+				05F5144173B13DEF3107E21A /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3001FED79650016851F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				7BA4922E355851362DEE26D8 /* MainViewController.swift in Sources */,
+				4DC413BC413EE42CB3DE06A7 /* FittPulsePlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		059634A499523ED51AA0F2A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FittWatch;
+			target = CDAFB3242C8BFACF057684BA /* FittWatch */;
+			targetProxy = F2D40C063A5458B7B47D16D6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
@@ -181,6 +317,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		285E97E9E1DDDD26321B53B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FittWatch/FittWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FittWatch/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FITTGAME;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "FITTGAME misst deine Herzfrequenz während des Kurses und zeigt sie live im Spiel an.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "FITTGAME speichert deine Kurse als Trainings in Apple Health.";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(FITT_BUNDLE_ID)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(FITT_BUNDLE_ID).watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
 		504EC3141FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
@@ -216,6 +384,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FITT_BUNDLE_ID = com.jakeey.fittgame;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -273,6 +442,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FITT_BUNDLE_ID = com.jakeey.fittgame;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -295,6 +465,7 @@
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = App/Info.plist;
@@ -305,7 +476,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jakeey.fittgame;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(FITT_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
@@ -317,6 +488,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = App/Info.plist;
@@ -326,11 +498,44 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jakeey.fittgame;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(FITT_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BBED2731282A983443C293F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FittWatch/FittWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FittWatch/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FITTGAME;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "FITTGAME misst deine Herzfrequenz während des Kurses und zeigt sie live im Spiel an.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "FITTGAME speichert deine Kurse als Trainings in Apple Health.";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(FITT_BUNDLE_ID)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(FITT_BUNDLE_ID).watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -351,6 +556,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BBA0C26C1718B803320CCB13 /* Build configuration list for PBXNativeTarget "FittWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBED2731282A983443C293F0 /* Release */,
+				285E97E9E1DDDD26321B53B2 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -49,6 +49,12 @@
 	<false/>
 	<key>UIStatusBarHidden</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>FITTGAME liest deine Herzfrequenz, um den Live-Puls im Spiel anzuzeigen und Pulszonen zu berechnen.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>FITTGAME speichert deine Kurse als Trainings in Apple Health.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>FITTGAME verbindet sich per Bluetooth mit deinem Pulsgurt, um die Herzfrequenz live anzuzeigen.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>FITTGAME nutzt die Kamera, um deine Bewegungen zu erkennen. Das Video bleibt auf deinem Gerät und wird nicht gespeichert oder hochgeladen.</string>
 </dict>

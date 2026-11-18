@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Xcode-Build (Simulator, ohne Signierung)
+    name: Xcode-Build iPhone + Watch (Simulator, ohne Signierung)
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +21,11 @@ jobs:
       - run: xcodebuild -list -project ios/App/App.xcodeproj
       - name: Build
         run: |
+          set -o pipefail
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO build
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log | grep -E "error:|\*\* BUILD" || true
+          grep -q "BUILD SUCCEEDED" build.log
+      - name: Fehler anzeigen
+        if: failure()
+        run: grep -n -B2 -A6 "error" build.log | head -150 || tail -80 build.log
